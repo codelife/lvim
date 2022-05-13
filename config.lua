@@ -13,16 +13,32 @@ Path = require('plenary.path')
 lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = "onedarker"
-lvim.builtin.lualine.options.theme = "OceanicNext"
-lvim.transparent_window = true
+lvim.builtin.lualine.options.theme = "rose-pine"
+lvim.transparent_window = false
+lvim.lsp.diagnostics.virtual_text = false
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 lvim.builtin.telescope.defaults.layout_config.vertical.mirror = false
 lvim.builtin.telescope.defaults.layout_config.width = 0.85
+vim.opt.splitbelow = false
+vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.foldenable = false -- no fold to be applied when open a file
+vim.opt.foldlevel = 99
+vim.opt.guifont = ""
 
 lvim.autocommands.custom_groups = {
   -- On entering a lua file, set the tab spacing and shift width to 8
-  { "BufWinEnter", "fugitive", "noremap <leader>q gq" },
+  { "WinEnter", "fugitive", "noremap <leader>q :q<cr>" },
+  { "ColorScheme", "*", ":lua require('user.lualine')" },
+  { "ColorScheme", "*", ":lua require('user.bufferline')" },
 }
+
+vim.cmd([[
+  augroup _fold_bug_solution  " https://github.com/nvim-telescope/telescope.nvim/issues/559
+    autocmd!
+    autocmd BufRead * autocmd BufWinEnter * ++once normal! zx
+  augroup end
+]])
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
@@ -85,23 +101,12 @@ lvim.builtin.gitsigns.opts.signs = {
   topdelete    = { hl = 'GitSignsDelete', text = '‾', numhl = 'GitSignsDeleteNr', linehl = 'GitSignsDeleteLn' },
   changedelete = { hl = 'GitSignsChange', text = '~', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn' },
 }
--- gitsigns map
-vim.api.nvim_set_keymap('n', '<leader>j', "&diff ? ']c' : '<cmd>Gitsigns next_hunk<CR>'", { expr = true })
-vim.api.nvim_set_keymap('n', '<leader>k', "&diff ? '[c' : '<cmd>Gitsigns prev_hunk<CR>'", { expr = true })
-vim.api.nvim_set_keymap('n', '<leader>hs', '<cmd>Gitsigns stage_hunk<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hr', '<cmd>Gitsigns reset_hunk<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hS', '<cmd>Gitsigns stage_buffer<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hu', '<cmd>Gitsigns undo_stage_hunk<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hR', '<cmd>Gitsigns reset_buffer<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hp', '<cmd>Gitsigns preview_hunk<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hb', '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>tb', '<cmd>Gitsigns toggle_current_line_blame<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hd', '<cmd>Gitsigns diffthis<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>hD', '<cmd>lua require"gitsigns".diffthis("~")<CR>', { noremap = true, silent = true })
+-- gitsigns textobjects map
 vim.api.nvim_set_keymap('o', 'ih', ':<C-U>Gitsigns select_hunk<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('x', 'ih', ':<C-U>Gitsigns select_hunk<CR>', { noremap = true, silent = true })
 
 -- for hop easymotion
+
 vim.api.nvim_set_keymap('', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap('', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap('n', 'w', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = false })<cr>", {})
@@ -109,8 +114,8 @@ vim.api.nvim_set_keymap('n', 'b', "<cmd>lua require'hop'.hint_words({ direction 
 vim.api.nvim_set_keymap('v', 'w', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = false })<cr>", {})
 vim.api.nvim_set_keymap('v', 'b', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = false })<cr>", {})
 vim.api.nvim_set_keymap('n', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
-vim.api.nvim_set_keymap('n', 'gh', "<cmd>lua require'hop'.hint_words({hint_position = require'hop.hint'.HintPosition.END, current_line_only = false })<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'gl', "<cmd>lua require'hop'.hint_words({direction = require'hop.hint'.HintDirection.AFTER_CURSOR, hint_position = require'hop.hint'.HintPosition.END, current_line_only = false })<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'gh', "<cmd>lua require'hop'.hint_words({direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, hint_position = require'hop.hint'.HintPosition.END, current_line_only = false })<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'ge', "<cmd>lua require'hop'.hint_words({direction = require'hop.hint'.HintDirection.AFTER_CURSOR, hint_position = require'hop.hint'.HintPosition.END, current_line_only = false })<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'gj', "<cmd>lua vim.diagnostic.goto_next()<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'gk', "<cmd>lua vim.diagnostic.goto_prev()<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<c-p>', "<cmd>BufferLineCyclePrev<cr>", {})
@@ -132,8 +137,6 @@ lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Exp
 lvim.builtin.which_key.mappings["n"] = { "<cmd>NvimTreeToggle<CR>", "nvim-tree" }
 lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope oldfiles<cr>", "Recent Files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Recent Files" }
-lvim.builtin.which_key.mappings["j"] = { "<cmd>Gitsigns next_hunk<cr>", "next_hunk" }
-lvim.builtin.which_key.mappings["k"] = { "<cmd>Gitsigns prev_hunk<cr>", "prev_hunk" }
 lvim.builtin.which_key.mappings["q"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>BufferLineSortByDirectory<cr>", "Buffer sort directory" }
@@ -151,6 +154,7 @@ lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require'telescope.builtin'.g
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
 lvim.builtin.which_key.mappings["ld"] = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace symbol" }
+lvim.builtin.which_key.mappings["lf"] = { "<cmd>Telescope search_history<cr>", "Search history" }
 lvim.builtin.which_key.mappings["ls"] = { "<cmd>Telescope lsp_document_symbols<cr>", "Document symbol" }
 lvim.builtin.which_key.mappings["lr"] = { "<cmd>lua require'telescope.builtin'.registers{}<cr>, ", "registers" }
 lvim.builtin.which_key.mappings["lh"] = { "<cmd>HopLine<cr>", "hop line" }
@@ -166,33 +170,45 @@ lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown 
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguALL<cr>", "Text format" }
 
-lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gvdiff<cr>", "git diff" }
-lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>" }
-lvim.builtin.which_key.mappings["gw"] = { "<cmd>Gwrite<cr>" }
-lvim.builtin.which_key.mappings["ga"] = { "<cmd>Gadd<cr>" }
-lvim.builtin.which_key.mappings["gb"] = { "<cmd>Git blame<cr>" }
-lvim.builtin.which_key.mappings["gr"] = { "<cmd>Gread<cr>" }
-lvim.builtin.which_key.mappings["gc"] = { "<cmd>Git commit<cr>" }
-lvim.builtin.which_key.mappings["gp"] = { "<cmd>Git push<cr>" }
-lvim.builtin.which_key.mappings["gg"] = { "<cmd>diffget //2<cr>" }
-lvim.builtin.which_key.mappings["gh"] = { "<cmd>diffget //3<cr>" }
+lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gvdiffsplit<cr>", "git diff" }
+lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
+lvim.builtin.which_key.mappings["gw"] = { "<cmd>GWrite<cr>", "git write" }
+lvim.builtin.which_key.mappings["ga"] = { "<cmd>GAdd<cr>", "git add" }
+lvim.builtin.which_key.mappings["gb"] = { "<cmd>Git blame<cr>", "git blame" }
+lvim.builtin.which_key.mappings["gr"] = { "<cmd>Gread<cr>", 'git read' }
+lvim.builtin.which_key.mappings["gc"] = { "<cmd>Git commit<cr>", 'git commit' }
+lvim.builtin.which_key.mappings["gp"] = { "<cmd>Git push<cr>", 'git push' }
+lvim.builtin.which_key.mappings["gg"] = { "<cmd>diffget //2<cr>", 'diffget left' }
+lvim.builtin.which_key.mappings["gh"] = { "<cmd>diffget //3<cr>", 'diffget right' }
+
+-- Gitsigns map
+lvim.builtin.which_key.mappings["j"] = { "<cmd>Gitsigns next_hunk<CR>", "next hunk" }
+lvim.builtin.which_key.mappings["k"] = { "<cmd>Gitsigns prev_hunk<CR>", "pre hunk" }
+lvim.builtin.which_key.mappings['hs'] = { '<cmd>Gitsigns stage_hunk<CR>', "stage hunk" }
+lvim.builtin.which_key.mappings['hr'] = { '<cmd>Gitsigns reset_hunk<CR>', "reset hunk" }
+lvim.builtin.which_key.mappings['hS'] = { '<cmd>Gitsigns stage_buffer<CR>', "stage buffer" }
+lvim.builtin.which_key.mappings['hu'] = { '<cmd>Gitsigns undo_stage_hunk<CR>', "undo stage hunk" }
+lvim.builtin.which_key.mappings['hR'] = { '<cmd>Gitsigns reset_buffer<CR>', "reset buffer" }
+lvim.builtin.which_key.mappings['hp'] = { '<cmd>Gitsigns preview_hunk<CR>', "preview hunk" }
+lvim.builtin.which_key.mappings['hb'] = { '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', "blame line" }
+lvim.builtin.which_key.mappings['tb'] = { '<cmd>Gitsigns toggle_current_line_blame<CR>', "toggle current line blame" }
+lvim.builtin.which_key.mappings['hd'] = { '<cmd>Gitsigns diffthis<CR>', "diff this" }
+lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
 
 lvim.builtin.which_key.mappings["="] = { "<c-w>10+", "increase window size" }
 lvim.builtin.which_key.mappings["-"] = { "<c-w>10-", "decrease window size" }
 lvim.builtin.which_key.mappings["]"] = { "<c-w>10>", "increase window size" }
 lvim.builtin.which_key.mappings["["] = { "<c-w>10<", "decrease window size" }
-lvim.builtin.which_key.mappings["j"] = { "<cmdb>Gitsigns next_hunk<CR>", "next_hunk" }
-lvim.builtin.which_key.mappings["k"] = { "<cmdb>Gitsigns prev_hunk<CR>", "prev_hunk" }
 
-lvim.builtin.cmp.formatting.source_names.buffer = "[B]"
+lvim.builtin.cmp.formatting.source_names.buffer = "[Buf]"
 lvim.builtin.cmp.formatting.source_names.calc = "[Calc]"
-lvim.builtin.cmp.formatting.source_names.cmp_tabnine = "[TN]"
-lvim.builtin.cmp.formatting.source_names.cmp_tabnine = "[COP]"
+lvim.builtin.cmp.formatting.source_names.cmp_tabnine = "[TabNine]"
+lvim.builtin.cmp.formatting.source_names.cmp_tabnine = "[Copilot]"
 lvim.builtin.cmp.formatting.source_names.emoji = "[Emoji]"
-lvim.builtin.cmp.formatting.source_names.luasnip = "[SP]"
-lvim.builtin.cmp.formatting.source_names.nvim_lsp = "[LSP]"
-lvim.builtin.cmp.formatting.source_names.path = "[PATH]"
-lvim.builtin.cmp.formatting.source_names.vsnip = "[SP]"
+lvim.builtin.cmp.formatting.source_names.luasnip = "[Snip]"
+lvim.builtin.cmp.formatting.source_names.nvim_lsp = "[Lsp]"
+lvim.builtin.cmp.formatting.source_names.path = "[Path]"
+lvim.builtin.cmp.formatting.source_names.vsnip = "[Snip]"
 
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = false
@@ -200,9 +216,8 @@ lvim.builtin.bufferline.options.diagnostics = false
 lvim.builtin.which_key.mappings["c"] = {}
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua require('lvim.core.telggcope').code_actions()<cr>", 'code action' }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
-lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.formatting()<cr>", 'code format' }
+lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format({ timeout_ms = 2000 })<cr>", 'code format' }
 lvim.builtin.which_key.mappings["cl"] = { "<cmd>lua vim.lsp.codelens.run()<cr>" }
-
 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
@@ -236,7 +251,6 @@ lvim.builtin.treesitter.highlight.enabled = true
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "autopep8", filetypes = { "python" } },
   { command = "yapf", filetypes = { "python" } },
   { command = "black", filetypes = { "python" }, extra_args = { "-l 140" } },
   { command = "isort", filetypes = { "python" } },
@@ -264,7 +278,7 @@ formatters.setup {
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { command = "flake8", filetypes = { "python" },
-    extra_args = { "--max-line-length=1000", "--ignore=E121,F403" },
+    extra_args = { "--max-line-length=4000", "--ignore=E121,F403, W503" },
   },
   {
     -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
@@ -284,7 +298,11 @@ lvim.plugins = {
   {
     "p00f/nvim-ts-rainbow",
   },
-  { "nacro90/numb.nvim", require("numb").setup() },
+  { "nacro90/numb.nvim",
+    config = function()
+      require("numb").setup()
+    end
+  },
   { "folke/tokyonight.nvim" },
   {
     "folke/trouble.nvim",
@@ -324,8 +342,8 @@ lvim.plugins = {
       "G",
       "Git",
       "Gdiffsplit",
-      "Gread",
-      "Gwrite",
+      "GRead",
+      "GWrite",
       "Ggrep",
       "GMove",
       "GDelete",
@@ -392,6 +410,7 @@ lvim.plugins = {
   {
     "monaqa/dial.nvim",
     event = "BufRead",
+    lock = true,
     config = function()
       vim.api.nvim_set_keymap("n", "<C-a>", require("dial.map").inc_normal(), { noremap = true })
       vim.api.nvim_set_keymap("n", "<C-x>", require("dial.map").dec_normal(), { noremap = true })
@@ -446,7 +465,7 @@ lvim.plugins = {
       ]])
     end
   },
-  { 'nvim-treesitter/nvim-treesitter-textobjects' },
+  { 'nvim-treesitter/nvim-treesitter-textobjects', lock = true },
   {
     "romgrk/nvim-treesitter-context",
     ft = { "sh", "go", "python", "vue", 'javascript', 'typescript' },
@@ -470,8 +489,8 @@ lvim.plugins = {
     end
   },
   { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview', lock = true },
-  { 'mzlogin/vim-markdown-toc', ft = 'markdown' },
-  { 'tpope/vim-markdown', ft = 'markdown' },
+  { 'mzlogin/vim-markdown-toc', ft = 'markdown', lock = true },
+  { 'tpope/vim-markdown', ft = 'markdown', lock = true },
   { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' }, lock = true },
   { 'mtdl9/vim-log-highlighting', lock = true },
   {
@@ -512,6 +531,12 @@ lvim.plugins = {
         max_path_length = 80, -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
       }
       )
+      vim.cmd([[
+        augroup _open_nvim_tree
+        autocmd! * <buffer>
+        autocmd SessionLoadPost * silent! lua require("nvim-tree").toggle(false, true)
+        augroup end
+        ]])
     end
   },
   { 'nvim-telescope/telescope-ui-select.nvim',
@@ -535,10 +560,18 @@ lvim.plugins = {
   { "kyoz/purify", lock = true },
   { 'danilo-augusto/vim-afterglow', lock = true },
   { "cseelus/vim-colors-lucid", lock = true },
-  { "ayu-theme/ayu-vim", config = function()
-    vim.cmd([[
-      let ayucolor="light"  " for mirage/dark/light version of theme
-    ]])
-  end }
-
+  { "ayu-theme/ayu-vim",
+    lock = true,
+    config = function()
+      vim.cmd([[
+      let ayucolor="mirage"  " for mirage/dark/light version of theme
+    ]] )
+    end },
+  { 'rose-pine/neovim',
+    as = 'rose-pine',
+    tag = 'v1.*',
+    -- config = function()
+    --   vim.cmd('colorscheme rose-pine')
+    -- end
+  }
 }
