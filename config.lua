@@ -165,6 +165,7 @@ lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown Gen
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguALL<cr>", "Text format" }
 
 lvim.builtin.which_key.mappings["gd"] = { "<cmd>DiffviewOpen<cr>", "git diff" }
+lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
 lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
 lvim.builtin.which_key.mappings["gw"] = { "<cmd>GWrite<cr>", "git write" }
 lvim.builtin.which_key.mappings["gr"] = { "<cmd>Gread<cr>", 'git read' }
