@@ -1,0 +1,13 @@
+{
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "src/experimental",
+    "src/typestubs"
+  ],
+  "reportMissingTypeStubs": false,
+  "reportOptionalMemberAccess": "none",
+  "reportUnboundVariable": "none",
+  "reportUnusedVariable": "none",
+  "reportGeneralTypeIssues": "none"
+}
