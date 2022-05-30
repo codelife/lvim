@@ -132,6 +132,9 @@ lvim.builtin.which_key.mappings["n"] = { "<cmd>NvimTreeToggle<CR>", "nvim-tree" 
 lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope oldfiles<cr>", "Recent Files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
+lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
+lvim.builtin.which_key.mappings["sw"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", 'search current word' }
+lvim.builtin.which_key.mappings["sp"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
 lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>BufferLineSortByDirectory<cr>", "Buffer sort directory" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
@@ -539,6 +542,7 @@ lvim.plugins = {
       vim.g.vista_default_executive = 'nvim_lsp'
     end
   },
+  { "simrat39/symbols-outline.nvim" },
   { "Shatur/neovim-session-manager",
     config = function()
       require("session_manager").setup(
@@ -570,6 +574,8 @@ lvim.plugins = {
       -- require("telescope").load_extension("dap")
     end
   },
+  { "windwp/nvim-spectre" },
+  { "ray-x/lsp_signature.nvim" },
   { 'mbbill/undotree', cmd = 'UndotreeToggle' },
   { 'gregsexton/Atom', lock = true },
   { "hzchirs/vim-material", lock = true },
