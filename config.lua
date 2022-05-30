@@ -25,11 +25,8 @@ vim.opt.foldenable = false -- no fold to be applied when open a file
 vim.opt.foldlevel = 99
 vim.opt.guifont = ""
 
-lvim.autocommands.custom_groups = {
-  -- On entering a lua file, set the tab spacing and shift width to 8
-  { "ColorScheme", "*", ":lua require('user.lualine')" },
-  { "ColorScheme", "*", ":lua require('user.bufferline')" },
-}
+vim.api.nvim_create_autocmd("ColorScheme", { pattern = { "*" }, command = "lua require('user.lualine')" })
+vim.api.nvim_create_autocmd("ColorScheme", { pattern = { "*" }, command = "lua require('user.bufferline')" })
 
 vim.cmd([[
   augroup _fold_bug_solution  " https://github.com/nvim-telescope/telescope.nvim/issues/559
