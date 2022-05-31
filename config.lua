@@ -40,6 +40,7 @@ lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 
+lvim.builtin.treesitter.matchup['enable'] = true
 --- vue script comment is error
 -- lvim.builtin.treesitter.context_commentstring.enable = true
 -- lvim.builtin.treesitter.context_commentstring.config = {
@@ -51,6 +52,7 @@ lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 --                 comment = '// %s'
 --         }
 -- }
+
 lvim.builtin.comment.pre_hook = function(ctx)
   local U = require 'Comment.utils'
 
@@ -97,6 +99,8 @@ lvim.builtin.gitsigns.opts.signs = {
   changedelete = { hl = 'GitSignsChange', text = '~', numhl = 'GitSignsChangeNr', linehl = 'GitSignsChangeLn' },
 }
 -- gitsigns textobjects map
+vim.api.nvim_set_keymap('i', '<c-a>', '<Home>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<c-e>', '<End>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('o', 'ih', ':<C-U>Gitsigns select_hunk<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('x', 'ih', ':<C-U>Gitsigns select_hunk<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'gj', "<cmd>lua vim.diagnostic.goto_next()<cr>", { noremap = true, silent = true })
@@ -114,6 +118,9 @@ vim.api.nvim_set_keymap('v', 'w', "<cmd>lua require'hop'.hint_words({ direction 
 vim.api.nvim_set_keymap('v', 'b', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap('n', 'g;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap("n", "s", ":HopChar2<cr>", { silent = true })
+vim.api.nvim_set_keymap('v', 'r', '<Plug>SnipRun', { silent = true })
+vim.api.nvim_set_keymap('n', '<leader>co', '<Plug>SnipRunOperator', { silent = true })
+vim.api.nvim_set_keymap('n', '<leader>cr', '<Plug>SnipRun', { silent = true })
 
 lvim.builtin.which_key.mappings["0"] = { "<cmd>BufferLineTogglePin <CR>", "buffer pin" }
 lvim.builtin.which_key.mappings["1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Explorer" }
@@ -131,8 +138,9 @@ lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" 
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
 lvim.builtin.which_key.mappings["sw"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", 'search current word' }
-lvim.builtin.which_key.mappings["sp"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
+lvim.builtin.which_key.mappings["sg"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
 lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
+lvim.builtin.which_key.mappings["dg"] = { "<Cmd>Neogen<CR>", 'gen doc' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>BufferLineSortByDirectory<cr>", "Buffer sort directory" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
 lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByExtension<cr>", "Sort buffer ext" }
@@ -144,7 +152,6 @@ lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_
 lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", 'ranger' }
 lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope find_files<cr>", "Find file" }
 lvim.builtin.which_key.mappings["fg"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
-lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require'telescope.builtin'.grep_string{}<cr>", "Grep current word" }
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
 lvim.builtin.which_key.mappings["lt"] = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace symbol" }
@@ -155,16 +162,16 @@ lvim.builtin.which_key.mappings["lh"] = { "<cmd>HopLine<cr>", "hop line" }
 lvim.builtin.which_key.mappings["ll"] = { "<cmd>NvimTreeFindFile<cr>", "locate file" }
 lvim.builtin.which_key.mappings["lj"] = { "<cmd>lua require'telescope.builtin'.jumplist{}<cr>", "jumplist" }
 lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.keymaps{}<cr>", "keymaps" }
-lvim.builtin.which_key.mappings["gl"] = { "<cmd>lua require'telescope.builtin'.git_commits{}<cr>", "git commits" }
-lvim.builtin.which_key.mappings["gi"] = { "<cmd>lua require'telescope.builtin'.git_branches{}<cr>", "git branches" }
 lvim.builtin.which_key.mappings["i"] = { "<cmd>IndentBlanklineToggle<cr>", "blankline toggle" }
 lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" }
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista nvim_lsp<cr>", "Code Navigate" }
+lvim.builtin.which_key.mappings["tl"] = { "<cmd>Twilight<cr>", "Code twilight" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguALL<cr>", "Text format" }
 
-lvim.builtin.which_key.mappings["gd"] = { "<cmd>DiffviewOpen<cr>", "git diff" }
+lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff current file" }
+lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
 lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
 lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
 lvim.builtin.which_key.mappings["gw"] = { "<cmd>GWrite<cr>", "git write" }
@@ -177,6 +184,7 @@ lvim.builtin.which_key.mappings["gh"] = { "<cmd>diffget //3<cr>", 'diffget right
 -- Gitsigns map
 lvim.builtin.which_key.mappings["j"] = { "<cmd>Gitsigns next_hunk<CR>", "next hunk" }
 lvim.builtin.which_key.mappings["k"] = { "<cmd>Gitsigns prev_hunk<CR>", "pre hunk" }
+lvim.builtin.which_key.mappings["y"] = { "<cmd>Telescope neoclip<CR>", "show clipboard" }
 lvim.builtin.which_key.mappings['hs'] = { '<cmd>Gitsigns stage_hunk<CR>', "stage hunk" }
 lvim.builtin.which_key.mappings['hr'] = { '<cmd>Gitsigns reset_hunk<CR>', "reset hunk" }
 lvim.builtin.which_key.mappings['hS'] = { '<cmd>Gitsigns stage_buffer<CR>', "stage buffer" }
@@ -363,7 +371,7 @@ lvim.plugins = {
   {
     "norcalli/nvim-colorizer.lua",
     config = function()
-      require("colorizer").setup({ "*" }, {
+      require("colorizer").setup({ 'vim'; 'css'; 'html'; 'vue'; 'lua'; 'markdown' }, {
         RGB = true, -- #RGB hex codes
         RRGGBB = true, -- #RRGGBB hex codes
         RRGGBBAA = true, -- #RRGGBBAA hex codes
@@ -372,15 +380,18 @@ lvim.plugins = {
         css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
         css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
       })
-    end,
-    ft = { 'vim', 'css', 'html', 'vue' },
-    lock = true
+    end
   },
   {
     "tzachar/cmp-tabnine",
     run = "./install.sh",
     requires = "hrsh7th/nvim-cmp",
     event = "InsertEnter",
+  },
+  { "danymat/neogen",
+    config = function()
+      require('neogen').setup {}
+    end
   },
   {
     "rmagatti/goto-preview",
@@ -518,6 +529,7 @@ lvim.plugins = {
   { 'tpope/vim-markdown', ft = 'markdown', lock = true },
   { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' }, lock = true },
   { 'mtdl9/vim-log-highlighting', lock = true },
+  { 'kevinhwang91/nvim-hlslens' },
   {
     "folke/todo-comments.nvim",
     event = "BufRead",
@@ -533,6 +545,7 @@ lvim.plugins = {
     "hrsh7th/cmp-copilot",
     ft = { "sh", "go", "python", "vue", 'javascript', 'typescript' },
   },
+  { 'michaelb/sniprun', run = 'bash ./install.sh' },
   { 'liuchengxu/vista.vim',
     cmd = 'Vista',
     config = function()
@@ -568,6 +581,7 @@ lvim.plugins = {
   { 'nvim-telescope/telescope-ui-select.nvim',
     config = function()
       require("telescope").load_extension("ui-select")
+      require("telescope").load_extension("neoclip")
       -- require("telescope").load_extension("dap")
     end
   },
@@ -584,10 +598,38 @@ lvim.plugins = {
   { 'KeitaNakamura/neodark.vim', lock = true },
   { 'morhetz/gruvbox', lock = true },
   { 'liuchengxu/space-vim-dark', lock = true },
+  { 'ray-x/aurora' },
   { "sickill/vim-monokai", lock = true },
   { "kyoz/purify", lock = true },
+  { "AckslD/nvim-neoclip.lua", as = 'neoclip',
+    config = function()
+      require('neoclip').setup()
+    end
+  },
+  { "stevearc/dressing.nvim" },
   { 'danilo-augusto/vim-afterglow', lock = true },
   { "cseelus/vim-colors-lucid", lock = true },
+  { "folke/twilight.nvim", config = function()
+    require("twilight").setup {
+      dimming = {
+        alpha = 0.25, -- amount of dimming
+        -- we try to get the foreground from the highlight groups or fallback color
+        color = { "Normal", "#ffffff" },
+        inactive = false, -- when true, other windows will be fully dimmed (unless they contain the same buffer)
+      },
+      context = 20, -- amount of lines we will try to show around the current line
+      treesitter = true, -- use treesitter when available for the filetype
+      -- treesitter is used to automatically expand the visible text,
+      -- but you can further control the types of nodes that should always be fully expanded
+      expand = { -- for treesitter, we we always try to expand to the top-most ancestor with these types
+        "function",
+        "method",
+        "table",
+        "if_statement",
+      },
+      exclude = {}, -- exclude these filetypes
+    }
+  end },
   { "ayu-theme/ayu-vim",
     lock = true,
     config = function()
