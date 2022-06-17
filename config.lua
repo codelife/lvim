@@ -109,9 +109,12 @@ vim.api.nvim_set_keymap('x', 'ih', ':<C-U>Gitsigns select_hunk<CR>', { noremap =
 vim.api.nvim_set_keymap('n', 'gj', "<cmd>lua vim.diagnostic.goto_next()<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'gk', "<cmd>lua vim.diagnostic.goto_prev()<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', 'gn', "<cmd>lua vim.lsp.buf.rename()<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'gp', "<cmd>lua require('goto-preview').goto_preview_definition()<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'gq', "<cmd>lua require('goto-preview').close_all_win()<cr>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'gi', "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'gp', "<cmd>lua require('goto-preview').goto_preview_definition()<cr>",
+  { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'gq', "<cmd>lua require('goto-preview').close_all_win()<cr>",
+  { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'gi', "<cmd>lua require('goto-preview').goto_preview_implementation()<cr>",
+  { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<c-p>', "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap('n', '<c-n>', "<cmd>BufferLineCycleNext<cr>", {})
 vim.api.nvim_set_keymap('n', ';w', "<cmd>w<cr>", {})
@@ -122,14 +125,22 @@ vim.api.nvim_set_keymap('n', '<M-j>', "", {})
 vim.api.nvim_set_keymap('v', '<M-k>', "", {})
 vim.api.nvim_set_keymap('v', '<M-j>', "", {})
 
-vim.api.nvim_set_keymap('', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
-vim.api.nvim_set_keymap('', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
+vim.api.nvim_set_keymap('', 'f',
+  "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>"
+  , {})
+vim.api.nvim_set_keymap('', 'F',
+  "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>"
+  , {})
 vim.api.nvim_set_keymap('n', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap('v', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
-vim.api.nvim_set_keymap('n', 'w', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
-vim.api.nvim_set_keymap('n', 'b', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
-vim.api.nvim_set_keymap('v', 'w', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
-vim.api.nvim_set_keymap('v', 'b', "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
+vim.api.nvim_set_keymap('n', 'w',
+  "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
+vim.api.nvim_set_keymap('n', 'b',
+  "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
+vim.api.nvim_set_keymap('v', 'w',
+  "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
+vim.api.nvim_set_keymap('v', 'b',
+  "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap('n', 'g;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap("n", "s", ":HopChar2<cr>", { silent = true })
 vim.api.nvim_set_keymap('v', 'r', '<Plug>SnipRun', { silent = true })
@@ -151,7 +162,8 @@ lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope oldfiles<cr>", "Recent 
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
-lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", 'search current word' }
+lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>",
+  'search current word' }
 lvim.builtin.which_key.mappings["sg"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
 lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["dg"] = { "<Cmd>Neogen<CR>", 'gen doc' }
@@ -159,10 +171,11 @@ lvim.builtin.which_key.mappings["ba"] = { "<cmd>BufferLineSortByDirectory<cr>", 
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
 lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByExtension<cr>", "Sort buffer ext" }
 lvim.builtin.which_key.mappings["lpp"] = { "<cmd>Telescope projects<cr>", "Projects" }
-lvim.builtin.which_key.mappings["ss"] = { "<cmd>SessionManager save_current_session<cr>", "Save current session" }
-lvim.builtin.which_key.mappings["sa"] = { "<cmd>SessionManager load_session<cr>", "Show all session" }
-lvim.builtin.which_key.mappings["sl"] = { "<cmd>SessionManager load_last_session<cr>", "Load last session" }
-lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_session<cr>", "Restore last session for CurrentDir" }
+-- lvim.builtin.which_key.mappings["ss"] = { "<cmd>SessionManager save_current_session<cr>", "Save current session" }
+-- lvim.builtin.which_key.mappings["sa"] = { "<cmd>SessionManager load_session<cr>", "Show all session" }
+-- lvim.builtin.which_key.mappings["sl"] = { "<cmd>SessionManager load_last_session<cr>", "Load last session" }
+-- lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_session<cr>",
+--   "Restore last session for CurrentDir" }
 lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", 'ranger' }
 lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope find_files<cr>", "Find file" }
 lvim.builtin.which_key.mappings["fh"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
@@ -185,7 +198,7 @@ lvim.builtin.which_key.mappings["tf"] = { "<cmd>LvimToggleFormatOnSave<cr>", "Fo
 lvim.builtin.which_key.mappings["tl"] = { "<cmd>Twilight<cr>", "Code twilight" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
-lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguALL<cr>", "Text format" }
+lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text format" }
 
 lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff current file" }
 lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
@@ -414,7 +427,7 @@ lvim.plugins = {
     config = function()
       require('goto-preview').setup {
         width = 121; -- Width of the floating window
-        height = 25; -- Height of the floating window
+        height = 40; -- Height of the floating window
         default_mappings = true; -- Bind default mappings
         debug = false; -- Print debug information
         opacity = nil; -- 0-100 opacity level of the floating window where 100 is fully transparent.
@@ -543,7 +556,7 @@ lvim.plugins = {
       { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" }
     }
   },
-  { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview', lock = true },
+  { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', lock = true, ft = "markdown" },
   { 'mzlogin/vim-markdown-toc', ft = 'markdown', lock = true },
   { 'tpope/vim-markdown', ft = 'markdown', lock = true },
   { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' }, lock = true },
@@ -582,31 +595,31 @@ lvim.plugins = {
     end
   },
   { "simrat39/symbols-outline.nvim" },
-  { "Shatur/neovim-session-manager",
-    config = function()
-      require("session_manager").setup(
-        {
-          sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
-          path_replacer = '__', -- The character to which the path separator will be replaced for session files.
-          colon_replacer = '++', -- The character to which the colon symbol will be replaced for session files.
-          autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
-          autosave_last_session = true, -- Automatically save last session on exit and on session switch.
-          autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
-          autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
-            'gitcommit',
-          },
-          autosave_only_in_session = false, -- Always autosaves session. If true, only autosaves after a session is active.
-          max_path_length = 80, -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
-        }
-      )
-      vim.cmd([[
-        augroup _open_nvim_tree
-        autocmd! * <buffer>
-        autocmd SessionLoadPost * silent! lua require("nvim-tree").toggle(false, true)
-        augroup end
-        ]])
-    end
-  },
+  -- { "Shatur/neovim-session-manager",
+  --   config = function()
+  --     require("session_manager").setup(
+  --       {
+  --         sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
+  --         path_replacer = '__', -- The character to which the path separator will be replaced for session files.
+  --         colon_replacer = '++', -- The character to which the colon symbol will be replaced for session files.
+  --         autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
+  --         autosave_last_session = true, -- Automatically save last session on exit and on session switch.
+  --         autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
+  --         autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
+  --           'gitcommit',
+  --         },
+  --         autosave_only_in_session = false, -- Always autosaves session. If true, only autosaves after a session is active.
+  --         max_path_length = 80, -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
+  --       }
+  --     )
+  --     vim.cmd([[
+  --       augroup _open_nvim_tree
+  --       autocmd! * <buffer>
+  --       autocmd SessionLoadPost * silent! lua require("nvim-tree").toggle(false, true)
+  --       augroup end
+  --       ]])
+  --   end
+  -- },
   { 'nvim-telescope/telescope-ui-select.nvim',
     config = function()
       require("telescope").load_extension("ui-select")
@@ -618,28 +631,24 @@ lvim.plugins = {
   { "ray-x/lsp_signature.nvim", config = function()
     require("lsp_signature").setup(
       {
-        debug = false,
+        debug = false, -- set to true to enable debug logging
         log_path = "debug_log_file_path", -- debug log path
+        verbose = false, -- show debug line number
         bind = true, -- This is mandatory, otherwise border config won't get registered.
+        -- If you want to hook lspsaga or other signature handler, pls set to false
         doc_lines = 10, -- will show two lines of comment/doc(if there are more than two lines in doc, will be truncated);
         -- set to 0 if you DO NOT want any API comments be shown
         -- This setting only take effect in insert mode, it does not affect signature help in normal
         -- mode, 10 by default
-
         floating_window = true, -- show hint in a floating window, set to false for virtual text only mode
-
         floating_window_above_cur_line = true, -- try to place the floating above the current line when possible Note:
         -- will set to true when fully tested, set to false will use whichever side has more space
         -- this setting will be helpful if you do not want the PUM and floating win overlap
-
-        floating_window_off_x = 1, -- adjust float windows x position.
-        floating_window_off_y = 1, -- adjust float windows y position.
-
-
         fix_pos = false, -- set to true, the floating window will not auto-close until finish all parameters
         hint_enable = true, -- virtual hint enable
         hint_prefix = "🐼 ", -- Panda for parameter
-        hint_scheme = "String",
+        hint_scheme = "Comment",
+        use_lspsaga = true, -- set to true if you want to use lspsaga popup
         hi_parameter = "LspSignatureActiveParameter", -- how your parameter will be highlight
         max_height = 12, -- max height of signature floating_window, if content is more than max_height, you can scroll down
         -- to view the hiding contents
@@ -654,12 +663,13 @@ lvim.plugins = {
         extra_trigger_chars = {}, -- Array of extra characters that will trigger signature completion, e.g., {"(", ","}
         zindex = 200, -- by default it will be on top of all floating windows, set to <= 50 send it to bottom
 
-        padding = '', -- character to pad on left and right of signature can be ' ', or '|'  etc
+        padding = "", -- character to pad on left and right of signature can be ' ', or '|'  etc
 
         transparency = nil, -- disabled by default, allow floating win transparent value 1~100
         shadow_blend = 36, -- if you using shadow as border use this set the opacity
-        shadow_guibg = 'Black', -- if you using shadow as border use this set the color e.g. 'Green' or '#121315'
+        shadow_guibg = "Black", -- if you using shadow as border use this set the color e.g. 'Green' or '#121315'
         timer_interval = 200, -- default timer check interval set to lower value if you want to reduce latency
+        toggle_key = nil, -- toggle signature on and off in insert mode,  e.g. toggle_key = '<M-x>'
       }
     )
   end
