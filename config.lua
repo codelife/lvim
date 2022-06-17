@@ -14,6 +14,7 @@ lvim.log.level = "warn"
 lvim.colorscheme = "sonokai"
 lvim.builtin.lualine.options.theme = "sonokai"
 lvim.transparent_window = false
+lvim.format_on_save = true
 lvim.lsp.diagnostics.virtual_text = true
 lvim.builtin.nvimtree.setup.view.width = 40
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
@@ -180,6 +181,7 @@ lvim.builtin.which_key.mappings["i"] = { "<cmd>IndentBlanklineToggle<cr>", "blan
 lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" }
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista nvim_lsp<cr>", "Code Navigate" }
 lvim.builtin.which_key.mappings["ts"] = { "<cmd>SymbolsOutline<cr>", "SymbolOutLine" }
+lvim.builtin.which_key.mappings["tf"] = { "<cmd>LvimToggleFormatOnSave<cr>", "FormatOnSaveToggle" }
 lvim.builtin.which_key.mappings["tl"] = { "<cmd>Twilight<cr>", "Code twilight" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
@@ -220,7 +222,6 @@ lvim.builtin.which_key.mappings["["] = { "<c-w>10<", "decrease window size" }
 lvim.builtin.cmp.formatting.source_names.buffer = "[Buf]"
 lvim.builtin.cmp.formatting.source_names.calc = "[Calc]"
 lvim.builtin.cmp.formatting.source_names.cmp_tabnine = "[TabNine]"
-lvim.builtin.cmp.formatting.source_names.cmp_tabnine = "[Copilot]"
 lvim.builtin.cmp.formatting.source_names.emoji = "[Emoji]"
 lvim.builtin.cmp.formatting.source_names.luasnip = "[Snip]"
 lvim.builtin.cmp.formatting.source_names.nvim_lsp = "[Lsp]"
@@ -484,7 +485,6 @@ lvim.plugins = {
   },
   {
     "lukas-reineke/indent-blankline.nvim",
-    cmd = 'IndentBlanklineToggle',
     setup = function()
       require("indent_blankline").setup {
         show_current_context = true,
@@ -556,12 +556,22 @@ lvim.plugins = {
       require("user.todo-comment")
     end,
   },
-  {
-    'github/copilot.vim',
-    ft = { "sh", "go", "python", "vue", 'javascript', 'typescript' },
+  { "hrsh7th/cmp-cmdline" },
+  { "zbirenbaum/copilot.lua",
+    event = { "VimEnter" },
+    config = function()
+      vim.defer_fn(function()
+        require("copilot").setup {
+          plugin_manager_path = get_runtime_dir() .. "/site/pack/packer",
+        }
+      end, 100)
+    end,
+  },
+  { "zbirenbaum/copilot-cmp",
+    after = { "copilot.lua", "nvim-cmp" },
   },
   {
-    "hrsh7th/cmp-copilot",
+    'github/copilot.vim',
     ft = { "sh", "go", "python", "vue", 'javascript', 'typescript' },
   },
   { 'michaelb/sniprun', run = 'bash ./install.sh' },
@@ -709,8 +719,7 @@ lvim.plugins = {
   { 'rose-pine/neovim',
     as = 'rose-pine',
     tag = 'v1.*',
-    -- config = function()
-    --   vim.cmd('colorscheme rose-pine')
-    -- end
   }
 }
+lvim.builtin.cmp.formatting.source_names["copilot"] = "[Copilot]"
+table.insert(lvim.builtin.cmp.sources, 1, { name = "copilot" })
