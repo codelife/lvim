@@ -13,6 +13,7 @@ Path = require('plenary.path')
 lvim.log.level = "warn"
 lvim.colorscheme = "sonokai"
 lvim.builtin.lualine.options.theme = "sonokai"
+lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = false
 lvim.format_on_save = true
 lvim.lsp.diagnostics.virtual_text = true
@@ -20,6 +21,9 @@ lvim.builtin.nvimtree.setup.view.width = 40
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 lvim.builtin.telescope.defaults.layout_config.vertical.mirror = false
 lvim.builtin.telescope.defaults.layout_config.width = 0.85
+lvim.builtin.bufferline.options.show_buffer_close_icons = false
+lvim.builtin.bufferline.options.sort_by = "extension" -- extension
+lvim.builtin.bufferline.highlights.buffer_selected.gui = "italic"
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
@@ -29,8 +33,6 @@ vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 
-vim.api.nvim_create_autocmd("ColorScheme", { pattern = { "*" }, command = "lua require('user.lualine')" })
-vim.api.nvim_create_autocmd("ColorScheme", { pattern = { "*" }, command = "lua require('user.bufferline')" })
 
 vim.cmd([[
   augroup _fold_bug_solution  " https://github.com/nvim-telescope/telescope.nvim/issues/559
@@ -147,18 +149,18 @@ vim.api.nvim_set_keymap('v', 'r', '<Plug>SnipRun', { silent = true })
 vim.api.nvim_set_keymap('n', '<leader>co', '<Plug>SnipRunOperator', { silent = true })
 vim.api.nvim_set_keymap('n', '<leader>cr', '<Plug>SnipRun', { silent = true })
 
-lvim.builtin.which_key.mappings["0"] = { "<cmd>BufferLineTogglePin <CR>", "buffer pin" }
-lvim.builtin.which_key.mappings["1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "Explorer" }
-lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "Explorer" }
+lvim.builtin.which_key.mappings["0"] = { "<cmd>BufferLineTogglePin <CR>", "Buffer pin" }
+lvim.builtin.which_key.mappings["1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "goto buffer1" }
+lvim.builtin.which_key.mappings["2"] = { "<cmd>BufferLineGoToBuffer 2<CR>", "goto buffer2" }
+lvim.builtin.which_key.mappings["3"] = { "<cmd>BufferLineGoToBuffer 3<CR>", "goto buffer3" }
+lvim.builtin.which_key.mappings["4"] = { "<cmd>BufferLineGoToBuffer 4<CR>", "goto buffer4" }
+lvim.builtin.which_key.mappings["5"] = { "<cmd>BufferLineGoToBuffer 5<CR>", "goto buffer4" }
+lvim.builtin.which_key.mappings["6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "goto buffer4" }
+lvim.builtin.which_key.mappings["7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "goto buffer4" }
+lvim.builtin.which_key.mappings["8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "goto buffer4" }
+lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["n"] = { "<cmd>NvimTreeToggle<CR>", "nvim-tree" }
-lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope oldfiles<cr>", "Recent Files" }
+lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope frecency<cr>", "Recent Files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
@@ -513,19 +515,42 @@ lvim.plugins = {
         }
       }
       vim.g.indentLine_enabled = 1
-      vim.g.indent_blankline_filetype_exclude = { "help", "terminal", "dashboard", "vista_kind", "lua" }
-      vim.g.indent_blankline_buftype_exclude = { "terminal" }
-      vim.g.indent_blankline_show_trailing_blankline_indent = true
+      vim.g.indent_blankline_filetype_exclude = { "help", "terminal", "dashboard", "vista_kind", "lua", "Trouble",
+        "NvimTree" }
+      vim.g.indent_blankline_buftype_exclude = { "terminal", "nofile" }
+      vim.g.indent_blankline_show_trailing_blankline_indent = false
+      vim.g.indent_blankline_show_current_context = true
       vim.g.indent_blankline_show_first_indent_level = false
       vim.g.indent_blankline_use_treesitter = true
       vim.g.indent_blankline_filetype = { 'python', "sh", 'go' }
-      vim.g.indent_blankline_char_list = { '|', '¦', '┆' }
+      vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
       vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
-      vim.cmd([[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
       vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
       vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
       vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
-      vim.cmd([[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]])
+      vim.g.indent_blankline_context_patterns = {
+        "class",
+        "return",
+        "function",
+        "method",
+        "^if",
+        "^while",
+        "jsx_element",
+        "^for",
+        "^object",
+        "^table",
+        "block",
+        "arguments",
+        "if_statement",
+        "else_clause",
+        "jsx_element",
+        "jsx_self_closing_element",
+        "try_statement",
+        "catch_clause",
+        "import_statement",
+        "operation_type",
+      }
     end
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects', lock = true },
@@ -620,12 +645,18 @@ lvim.plugins = {
   --       ]])
   --   end
   -- },
+  { "tami5/sqlite.lua" },
   { 'nvim-telescope/telescope-ui-select.nvim',
     config = function()
       require("telescope").load_extension("ui-select")
       require("telescope").load_extension("neoclip")
+      require("telescope").load_extension("frecency")
       -- require("telescope").load_extension("dap")
     end
+  },
+  {
+    "nvim-telescope/telescope-frecency.nvim",
+    requires = { "tami5/sqlite.lua" }
   },
   { "windwp/nvim-spectre" },
   { "ray-x/lsp_signature.nvim", config = function()
