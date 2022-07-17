@@ -1,4 +1,5 @@
 ignore
-plugin
+plugin/*
 lv-settings.lua
 sessions/*
+*.sqlite3
