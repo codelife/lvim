@@ -16,7 +16,10 @@ lvim.builtin.lualine.options.theme = "sonokai"
 lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = true
 lvim.format_on_save = true
-lvim.lsp.diagnostics.virtual_text = true
+lvim.lsp.diagnostics.virtual_text = false
+vim.diagnostic.config({
+  virtual_text = false,
+})
 lvim.builtin.nvimtree.setup.view.width = 40
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 lvim.builtin.telescope.defaults.layout_config.vertical.mirror = false
@@ -494,6 +497,12 @@ lvim.plugins = {
     end
   },
   {
+    "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    config = function()
+      require("lsp_lines").setup({ virtual_lines = true })
+    end,
+  },
+  {
     "lukas-reineke/indent-blankline.nvim",
     setup = function()
       require("indent_blankline").setup {
@@ -720,7 +729,7 @@ lvim.plugins = {
           enable_persistent_history = true,
           length_limit = 1048576,
           continuous_sync = true,
-          db_path = "~/.config/.neoclip.sqlite3",
+          db_path = "/Users/junyali/.config/.neoclip.sqlite3",
           enable_macro_history = true,
         }
       )
