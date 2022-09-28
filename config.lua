@@ -37,6 +37,7 @@ vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
+
 vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
   ["display.ghost_text.enabled"] = true }
 
@@ -126,6 +127,7 @@ vim.api.nvim_set_keymap('n', '<M-j>', "", {})
 vim.api.nvim_set_keymap('v', '<M-k>', "", {})
 vim.api.nvim_set_keymap('v', '<M-j>', "", {})
 
+
 vim.api.nvim_set_keymap('', 'f',
   "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>"
   , {})
@@ -157,7 +159,7 @@ lvim.builtin.which_key.mappings["6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "got
 lvim.builtin.which_key.mappings["7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "goto buffer4" }
-lvim.builtin.which_key.mappings["n"] = { "<cmd>NvimTreeToggle<CR>", "nvim-tree" }
+lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
@@ -182,11 +184,14 @@ lvim.builtin.which_key.mappings["fg"] = { "<cmd>Telescope live_grep<cr>", "Live 
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
 lvim.builtin.which_key.mappings["lt"] = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace symbol" }
+lvim.builtin.which_key.mappings["lf"] = { "", "Search history" }
 lvim.builtin.which_key.mappings["lf"] = { "<cmd>Telescope search_history<cr>", "Search history" }
 lvim.builtin.which_key.mappings["ls"] = { "<cmd>Telescope lsp_document_symbols<cr>", "Document symbol" }
+lvim.builtin.which_key.mappings["lr"] = { "", "registers" }
 lvim.builtin.which_key.mappings["lr"] = { "<cmd>lua require'telescope.builtin'.registers{}<cr>, ", "registers" }
 lvim.builtin.which_key.mappings["lm"] = { "<cmd>Telescope macroscope<cr>", "macros" }
 lvim.builtin.which_key.mappings["lh"] = { "<cmd>HopLine<cr>", "hop line" }
+lvim.builtin.which_key.mappings["ll"] = { "", "locate file" }
 lvim.builtin.which_key.mappings["ll"] = { "<cmd>NvimTreeFindFile<cr>", "locate file" }
 lvim.builtin.which_key.mappings["lj"] = { "<cmd>lua require'telescope.builtin'.jumplist{}<cr>", "jumplist" }
 lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.keymaps{}<cr>", "keymaps" }
@@ -195,7 +200,6 @@ lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" 
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista nvim_lsp<cr>", "Code Navigate" }
 lvim.builtin.which_key.mappings["ts"] = { "<cmd>SymbolsOutline<cr>", "SymbolOutLine" }
 lvim.builtin.which_key.mappings["tf"] = { "<cmd>LvimToggleFormatOnSave<cr>", "FormatOnSaveToggle" }
-lvim.builtin.which_key.mappings["tl"] = { "<cmd>Twilight<cr>", "Code twilight" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text format" }
@@ -239,8 +243,6 @@ lvim.builtin.bufferline.options.diagnostics = false
 
 lvim.builtin.which_key.mappings["f"] = { "", "file related" }
 lvim.builtin.which_key.mappings["c"] = { "", "code related" }
-lvim.builtin.which_key.mappings["e"] = { "", "file mru" }
-lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope frecency<cr>", "Recent Files" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua require('lvim.core.telggcope').code_actions()<cr>", 'code action' }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
 lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.formatting()<cr>", 'code format' }
@@ -653,7 +655,7 @@ lvim.plugins = {
   },
   {
     "nvim-telescope/telescope-frecency.nvim",
-    requires = { "tami5/sqlite.lua" }
+    requires = { "tami5/sqlite.lua" },
   },
   { "windwp/nvim-spectre" },
   -- { "ray-x/lsp_signature.nvim", config = function()
