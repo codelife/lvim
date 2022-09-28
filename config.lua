@@ -17,6 +17,8 @@ lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = true
 lvim.format_on_save = true
 lvim.lsp.diagnostics.virtual_text = false
+--[[ lvim.lsp.automatic_servers_installation = true ]]
+lvim.lsp.installer.setup.automatic_installation = true
 vim.diagnostic.config({
   virtual_text = false,
 })
@@ -35,7 +37,7 @@ vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
-vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up", ["match.proximate_lines"] = 30,
+vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
   ["display.ghost_text.enabled"] = true }
 
 
@@ -156,8 +158,6 @@ lvim.builtin.which_key.mappings["7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "got
 lvim.builtin.which_key.mappings["8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["n"] = { "<cmd>NvimTreeToggle<CR>", "nvim-tree" }
-lvim.builtin.which_key.mappings["e"] = { "", "Recent Files" }
-lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope frecency<cr>", "Recent Files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
@@ -239,6 +239,8 @@ lvim.builtin.bufferline.options.diagnostics = false
 
 lvim.builtin.which_key.mappings["f"] = { "", "file related" }
 lvim.builtin.which_key.mappings["c"] = { "", "code related" }
+lvim.builtin.which_key.mappings["e"] = { "", "file mru" }
+lvim.builtin.which_key.mappings["e"] = { "<cmd>Telescope frecency<cr>", "Recent Files" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua require('lvim.core.telggcope').code_actions()<cr>", 'code action' }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
 lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.formatting()<cr>", 'code format' }
@@ -260,24 +262,32 @@ lvim.builtin.treesitter.ensure_installed = {
   "json",
   "lua",
   "python",
+  "go",
   "typescript",
   "tsx",
   "css",
   "rust",
   "java",
   "yaml",
+  "proto",
+  "sql",
+  "vue",
+  "hcl"
 }
 
 lvim.builtin.treesitter.ignore_install = { "haskell" }
 lvim.builtin.treesitter.highlight.enabled = true
-
-
+local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
+parser_configs.hcl = {
+  filetype = "hcl", "terraform",
+}
 
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "black", filetypes = { "python" }, extra_args = { "-l 140" } },
+  { command = "black", filetypes = { "python" }, extra_args = { "-l 120" } },
   { command = "isort", filetypes = { "python" } },
+  { command = "gofmt", filetypes = { "go" } },
   {
     -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "prettier",
@@ -285,7 +295,7 @@ formatters.setup {
     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
     extra_args = { "--print-with", "120" },
     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "typescript", "typescriptreact", "typescript", "json", "html", "yaml" },
+    filetypes = { "json", "html", "yaml" },
   },
   {
     -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
@@ -294,7 +304,7 @@ formatters.setup {
     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
     extra_args = { "-f", "json", "--stdin", "--stdin-filename", "$FILENAME" },
     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact", "vue" },
+    filetypes = { "javascript", "javascriptreact", "vue" },
   }
 }
 
@@ -302,7 +312,7 @@ formatters.setup {
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { command = "flake8", filetypes = { "python" },
-    extra_args = { "--max-line-length=140", "--ignore=E121,E501,F403,W503", "--max-complexity=12" },
+    extra_args = { "--max-line-length=120", "--ignore=E121,E501,F403,W503", "--max-complexity=15" },
   },
   {
     -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
@@ -729,12 +739,11 @@ lvim.plugins = {
           enable_persistent_history = true,
           length_limit = 1048576,
           continuous_sync = true,
-          db_path = "/Users/junyali/.config/.neoclip.sqlite3",
+          db_path = "/tmp/.neoclip.sqlite3",
           enable_macro_history = true,
         }
       )
     end
   },
   { "stevearc/dressing.nvim" },
-  { "folke/twilight.nvim" },
 }
