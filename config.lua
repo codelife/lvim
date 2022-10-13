@@ -18,11 +18,11 @@ lvim.transparent_window = true
 lvim.format_on_save = true
 lvim.lsp.diagnostics.virtual_text = false
 --[[ lvim.lsp.automatic_servers_installation = true ]]
-lvim.lsp.installer.setup.automatic_installation = true
+--[[ lvim.lsp.installer.setup.automatic_installation = true ]]
 vim.diagnostic.config({
   virtual_text = false,
 })
-lvim.builtin.nvimtree.setup.view.width = 40
+lvim.builtin.nvimtree.setup.view.width = 35
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 lvim.builtin.telescope.defaults.layout_config.vertical.mirror = false
 lvim.builtin.telescope.defaults.layout_config.width = 0.85
@@ -37,6 +37,7 @@ vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd" })
 
 vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
   ["display.ghost_text.enabled"] = true }
@@ -306,7 +307,7 @@ formatters.setup {
     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
     extra_args = { "-f", "json", "--stdin", "--stdin-filename", "$FILENAME" },
     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "javascript", "javascriptreact", "vue" },
+    filetypes = { "javascript", "javascriptreact", "vue", "typescriptreact" },
   }
 }
 
@@ -326,7 +327,7 @@ linters.setup {
   {
     command = "eslint_d",
     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "javascript", "typescript", "vue" },
+    filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
   },
 }
 -- Additional Plugins
