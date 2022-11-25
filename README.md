@@ -3,6 +3,7 @@
 
 * [title1](#title1)
 * [title2](#title2)
+    * [generate current all setting](#generate-current-all-setting)
 
 <!-- vim-markdown-toc -->
   lunarvim config
@@ -34,3 +35,6 @@ LSP:
 * vue-language-server
 * yamlfmt
 
+
+## generate current all setting
+lvim --headless +'lua require("lvim.utils").generate_settings()' +qa && sort -o lv-settings.lua{,}

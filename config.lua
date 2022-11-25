@@ -11,7 +11,7 @@ an executable
 -- general
 Path = require('plenary.path')
 lvim.log.level = "warn"
-lvim.colorscheme = "sonokai"
+lvim.colorscheme = "vim-monokai-tasty"
 lvim.builtin.lualine.options.theme = "sonokai"
 lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = true
@@ -27,7 +27,7 @@ lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 lvim.builtin.telescope.defaults.layout_config.vertical.mirror = false
 lvim.builtin.telescope.defaults.layout_config.width = 0.85
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
-lvim.builtin.bufferline.options.sort_by = "extension"
+lvim.builtin.bufferline.options.sort_by = "directory"
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
@@ -42,6 +42,35 @@ vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd" })
 vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
   ["display.ghost_text.enabled"] = true }
 
+--[[ lsp installed list ]]
+--[[  black ]]
+--[[  buf ]]
+--[[  css-lsp ]]
+--[[  dockerfile-language-server ]]
+--[[  eslint_d ]]
+--[[  fixjson ]]
+--[[  flake8 ]]
+--[[  gofumpt ]]
+--[[  goimports ]]
+--[[  golangci-lint ]]
+--[[  golines ]]
+--[[  gopls ]]
+--[[  html-lsp ]]
+--[[  isort ]]
+--[[  json-lsp ]]
+--[[  lua-language-server ]]
+--[[  markdownlint ]]
+--[[  prettier ]]
+--[[  pyright ]]
+--[[  shellcheck ]]
+--[[  sql-formatter ]]
+--[[  tailwindcss-language-server ]]
+--[[  taplo ]]
+--[[  typescript-language-server ]]
+--[[  vim-language-server ]]
+--[[  vue-language-server ]]
+--[[  yaml-language-server ]]
+--[[  yamlfmt ]]
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
@@ -127,6 +156,8 @@ vim.api.nvim_set_keymap('n', '<M-k>', "", {})
 vim.api.nvim_set_keymap('n', '<M-j>', "", {})
 vim.api.nvim_set_keymap('v', '<M-k>', "", {})
 vim.api.nvim_set_keymap('v', '<M-j>', "", {})
+--[[ vim.api.nvim_set_keymap('n', 'ts', "viw:Translate ZH <CR>", { noremap = true, silent = true }) ]]
+--[[ vim.api.nvim_set_keymap('v', 'ts', ":Translate ZH <CR>", { noremap = true, silent = true }) ]]
 
 
 vim.api.nvim_set_keymap('', 'f',
@@ -169,7 +200,7 @@ lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require('spectre').open_visu
 lvim.builtin.which_key.mappings["sg"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
 lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["dg"] = { "<Cmd>Neogen<CR>", 'gen doc' }
-lvim.builtin.which_key.mappings["ba"] = { "<cmd>BufferLineSortByDirectory<cr>", "Buffer sort directory" }
+lvim.builtin.which_key.mappings["ba"] = { "<cmd>Telescope buffers<cr>", "List buffers" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
 lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByExtension<cr>", "Sort buffer ext" }
 lvim.builtin.which_key.mappings["pp"] = { "<cmd>Telescope projects<cr>", "Projects" }
@@ -179,9 +210,10 @@ lvim.builtin.which_key.mappings["sl"] = { "<cmd>SessionManager load_last_session
 lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_session<cr>",
   "Restore last session for CurrentDir" }
 lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", 'ranger' }
-lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope find_files<cr>", "Find file" }
+lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope git_files<cr>", "Find file" }
 lvim.builtin.which_key.mappings["fh"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
 lvim.builtin.which_key.mappings["fg"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
+lvim.builtin.which_key.mappings["fw"] = { "<cmd>Telescope grep_string<cr>", "Searches word under cursor" }
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
 lvim.builtin.which_key.mappings["lt"] = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace symbol" }
@@ -198,8 +230,8 @@ lvim.builtin.which_key.mappings["lj"] = { "<cmd>lua require'telescope.builtin'.j
 lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.keymaps{}<cr>", "keymaps" }
 lvim.builtin.which_key.mappings["i"] = { "<cmd>IndentBlanklineToggle<cr>", "blankline toggle" }
 lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" }
-lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista nvim_lsp<cr>", "Code Navigate" }
-lvim.builtin.which_key.mappings["ts"] = { "<cmd>SymbolsOutline<cr>", "SymbolOutLine" }
+lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista!!<cr>", "Code Navigate" }
+lvim.builtin.which_key.mappings["ts"] = { "viw:Translate ZH <CR>", "Translate current word" }
 lvim.builtin.which_key.mappings["tf"] = { "<cmd>LvimToggleFormatOnSave<cr>", "FormatOnSaveToggle" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
@@ -234,17 +266,12 @@ lvim.builtin.which_key.mappings['tb'] = { '<cmd>Gitsigns toggle_current_line_bla
 lvim.builtin.which_key.mappings['hd'] = { '<cmd>Gitsigns diffthis<CR>', "diff this" }
 lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
 
-lvim.builtin.which_key.mappings["="] = { "<c-w>10+", "increase window size" }
-lvim.builtin.which_key.mappings["-"] = { "<c-w>10-", "decrease window size" }
-lvim.builtin.which_key.mappings["]"] = { "<c-w>10>", "increase window size" }
-lvim.builtin.which_key.mappings["["] = { "<c-w>10<", "decrease window size" }
-
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = false
 
 lvim.builtin.which_key.mappings["f"] = { "", "file related" }
 lvim.builtin.which_key.mappings["c"] = { "", "code related" }
-lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua require('lvim.core.telggcope').code_actions()<cr>", 'code action' }
+lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
 lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.formatting()<cr>", 'code format' }
 lvim.builtin.which_key.mappings["cl"] = { "<cmd>lua vim.lsp.codelens.run()<cr>" }
@@ -290,24 +317,19 @@ local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   { command = "black", filetypes = { "python" }, extra_args = { "-l 120" } },
   { command = "isort", filetypes = { "python" } },
-  { command = "gofmt", filetypes = { "go" } },
+  { command = "gofumpt", filetypes = { "go" } },
+  { command = "goimports", filetypes = { "go" } },
+  { command = "golines", filetypes = { "go" }, extra_args = { "-m 120" } },
+  { command = "sql_formatter", filetypes = { "sql" } },
   {
-    -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "prettier",
-    ---@usage arguments to pass to the formatter
-    -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
     extra_args = { "--print-with", "120" },
-    ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
     filetypes = { "json", "html", "yaml" },
   },
   {
-    -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
     command = "eslint_d",
-    ---@usage arguments to pass to the formatter
-    -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
     extra_args = { "-f", "json", "--stdin", "--stdin-filename", "$FILENAME" },
-    ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "javascript", "javascriptreact", "vue", "typescriptreact" },
+    filetypes = { "javascript", "javascriptreact", "vue", "typescriptreact", "typescript" },
   }
 }
 
@@ -315,20 +337,13 @@ formatters.setup {
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { command = "flake8", filetypes = { "python" },
-    extra_args = { "--max-line-length=120", "--ignore=E121,E501,F403,W503", "--max-complexity=15" },
+    extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503", "--max-complexity=15" },
   },
-  {
-    -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
-    command = "shellcheck",
-    ---@usage arguments to pass to the formatter
-    -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
-    extra_args = { "--severity", "warning" },
-  },
-  {
-    command = "eslint_d",
-    ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    filetypes = { "javascript", "typescript", "vue", "typescriptreact" },
-  },
+  { command = "golangci-lint", filetypes = { "go" } },
+  --[[ { ]]
+  --[[   command = "eslint_d", ]]
+  --[[   filetypes = { "javascript", "typescript", "vue", "typescriptreact" }, ]]
+  --[[ }, ]]
 }
 -- Additional Plugins
 lvim.plugins = {
@@ -352,7 +367,6 @@ lvim.plugins = {
       require("numb").setup()
     end
   },
-  { "folke/tokyonight.nvim" },
   {
     "folke/trouble.nvim",
     cmd = "TroubleToggle",
@@ -411,10 +425,6 @@ lvim.plugins = {
     config = function()
       require("nvim-ts-autotag").setup()
     end,
-  },
-  {
-    "folke/lsp-colors.nvim",
-    event = "BufRead",
   },
   {
     "norcalli/nvim-colorizer.lua",
@@ -580,10 +590,6 @@ lvim.plugins = {
         throttle = true, -- Throttles plugin updates (may improve performance)
         max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
         patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
-          -- For all filetypes
-          -- Note that setting an entry here replaces all other patterns for this entry.
-          -- By setting the 'default' entry below, you can control which nodes you want to
-          -- appear in the context window.
           default = {
             'class',
             'function',
@@ -593,17 +599,16 @@ lvim.plugins = {
       }
     end
   },
-  { "ThePrimeagen/refactoring.nvim",
-    requires = {
-      { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" }
-    }
-  },
   { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', lock = true, ft = "markdown" },
   { 'mzlogin/vim-markdown-toc', ft = 'markdown', lock = true },
   { 'tpope/vim-markdown', ft = 'markdown', lock = true },
   { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' }, lock = true },
   { 'mtdl9/vim-log-highlighting', lock = true },
-  { 'kevinhwang91/nvim-hlslens' },
+  { 'kevinhwang91/nvim-hlslens',
+    config = function()
+      require('hlslens').setup()
+    end
+  },
   {
     "folke/todo-comments.nvim",
     event = "BufRead",
@@ -654,6 +659,7 @@ lvim.plugins = {
       -- require("telescope").load_extension("dap")
     end
   },
+  { 'mbbill/undotree', cmd = 'UndotreeToggle' },
   {
     "nvim-telescope/telescope-frecency.nvim",
     requires = { "tami5/sqlite.lua" },
@@ -714,25 +720,26 @@ lvim.plugins = {
         keys = "<Esc>", -- keys used for escaping, if it is a function will use the result everytime
       })
     end },
-  { 'mbbill/undotree', cmd = 'UndotreeToggle' },
-  { 'gregsexton/Atom', lock = true },
+  {
+    "folke/styler.nvim",
+    config = function()
+      require("styler").setup({
+        themes = {
+          markdown = { colorscheme = "monokai" },
+          help = { colorscheme = "monokai" },
+        },
+      })
+    end,
+  },
   { "hzchirs/vim-material", lock = true },
   { 'projekt0n/github-nvim-theme', lock = true },
-  { "lourenci/github-colors" },
-  { 'Mofiqul/dracula.nvim' },
   { "EdenEast/nightfox.nvim" },
-  { 'rose-pine/neovim', config = function()
-    require("rose-pine").setup({ dark_variant = 'moon', })
-  end },
   { 'phanviet/vim-monokai-pro', lock = true },
   { 'mhartington/oceanic-next', lock = true },
-  { "rockyzhang24/arctic.nvim", requires = { "rktjmp/lush.nvim" } },
   { 'patstockwell/vim-monokai-tasty', lock = true },
-  { 'joshdick/onedark.vim', lock = true },
   { 'KeitaNakamura/neodark.vim', lock = true },
-  { 'morhetz/gruvbox', lock = true },
+  { 'catppuccin/nvim' },
   { "sainnhe/sonokai", lock = true },
-  { 'liuchengxu/space-vim-dark', lock = true },
   { "sickill/vim-monokai" },
   { "AckslD/nvim-neoclip.lua", as = 'neoclip',
     config = function()
@@ -749,4 +756,5 @@ lvim.plugins = {
     end
   },
   { "stevearc/dressing.nvim" },
+  { 'uga-rosa/translate.nvim' },
 }
