@@ -37,7 +37,6 @@ vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd" })
 
 vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
   ["display.ghost_text.enabled"] = true }
@@ -75,18 +74,7 @@ vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shu
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 
-lvim.builtin.treesitter.matchup['enable'] = true
---- vue script comment is error
--- lvim.builtin.treesitter.context_commentstring.enable = true
--- lvim.builtin.treesitter.context_commentstring.config = {
---         javascript = {
---                 __default = '// %s',
---                 jsx_element = '{/* %s */}',
---                 jsx_fragment = '{/* %s */}',
---                 jsx_attribute = '// %s',
---                 comment = '// %s'
---         }
--- }
+--[[ lvim.builtin.treesitter.matchup['enable'] = true ]]
 
 lvim.builtin.comment.pre_hook = function(ctx)
   local U = require 'Comment.utils'
@@ -199,7 +187,7 @@ lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require('spectre').open_visu
   'search current word' }
 lvim.builtin.which_key.mappings["sg"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
 lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
-lvim.builtin.which_key.mappings["dg"] = { "<Cmd>Neogen<CR>", 'gen doc' }
+lvim.builtin.which_key.mappings["dg"] = { "<Cmd>DogeGenerate<CR>", 'gen doc' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>Telescope buffers<cr>", "List buffers" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
 lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByExtension<cr>", "Sort buffer ext" }
@@ -273,7 +261,7 @@ lvim.builtin.which_key.mappings["f"] = { "", "file related" }
 lvim.builtin.which_key.mappings["c"] = { "", "code related" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
-lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.formatting()<cr>", 'code format' }
+lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format()<cr>", 'code format' }
 lvim.builtin.which_key.mappings["cl"] = { "<cmd>lua vim.lsp.codelens.run()<cr>" }
 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
@@ -305,8 +293,57 @@ lvim.builtin.treesitter.ensure_installed = {
   "hcl"
 }
 
-lvim.builtin.treesitter.ignore_install = { "haskell" }
-lvim.builtin.treesitter.highlight.enabled = true
+vim.g.indentLine_enabled = 1
+--[[ vim.g.indent_blankline_filetype_exclude = { "help", "terminal", "dashboard", "vista_kind", "lua", "Trouble", "NvimTree" } ]]
+vim.g.indent_blankline_buftype_exclude = { "terminal", "nofile" }
+vim.g.indent_blankline_show_trailing_blankline_indent = false
+vim.g.indent_blankline_show_current_context = true
+vim.g.indent_blankline_show_first_indent_level = false
+vim.g.indent_blankline_use_treesitter = true
+vim.g.indent_blankline_filetype = { 'python', "sh", 'go' }
+vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
+vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
+vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
+vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
+vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
+vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
+vim.g.indent_blankline_context_patterns = {
+  "class",
+  "return",
+  "function",
+  "method",
+  "^if",
+  "^while",
+  "jsx_element",
+  "^for",
+  "^object",
+  "^table",
+  "block",
+  "arguments",
+  "if_statement",
+  "else_clause",
+  "jsx_element",
+  "jsx_self_closing_element",
+  "try_statement",
+  "catch_clause",
+  "import_statement",
+  "operation_type",
+}
+
+require("indent_blankline").setup {
+  show_current_context = true,
+  show_current_context_start = true,
+  space_char_blankline = " ",
+  char_highlight_list = {
+    "IndentBlanklineIndent1",
+    "IndentBlanklineIndent2",
+    "IndentBlanklineIndent3",
+    "IndentBlanklineIndent4",
+    "IndentBlanklineIndent5",
+    "IndentBlanklineIndent6",
+  }
+}
+
 local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
 parser_configs.hcl = {
   filetype = "hcl", "terraform",
@@ -427,24 +464,9 @@ lvim.plugins = {
     end,
   },
   {
-    "norcalli/nvim-colorizer.lua",
-    config = function()
-      require("colorizer").setup({ 'vim'; 'css'; 'html'; 'vue'; 'lua'; 'markdown', "yml" }, {
-        RGB = true, -- #RGB hex codes
-        RRGGBB = true, -- #RRGGBB hex codes
-        RRGGBBAA = true, -- #RRGGBBAA hex codes
-        rgb_fn = true, -- CSS rgb() and rgba() functions
-        hsl_fn = true, -- CSS hsl() and hsla() functions
-        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-      })
-    end
+    "norcalli/nvim-colorizer.lua", run = ":lua require'colorizer'.setup()"
   },
-  { "danymat/neogen",
-    config = function()
-      require('neogen').setup {}
-    end
-  },
+  { "kkoomen/vim-doge", run = ':call doge#install()' },
   {
     "rmagatti/goto-preview",
     config = function()
@@ -524,61 +546,6 @@ lvim.plugins = {
     config = function()
       require("lsp_lines").setup({ virtual_lines = true })
     end,
-  },
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    setup = function()
-      require("indent_blankline").setup {
-        show_current_context = true,
-        show_current_context_start = true,
-        space_char_blankline = " ",
-        char_highlight_list = {
-          "IndentBlanklineIndent1",
-          "IndentBlanklineIndent2",
-          "IndentBlanklineIndent3",
-          "IndentBlanklineIndent4",
-          "IndentBlanklineIndent5",
-          "IndentBlanklineIndent6",
-        }
-      }
-      vim.g.indentLine_enabled = 0
-      vim.g.indent_blankline_filetype_exclude = { "help", "terminal", "dashboard", "vista_kind", "lua", "Trouble",
-        "NvimTree" }
-      vim.g.indent_blankline_buftype_exclude = { "terminal", "nofile" }
-      vim.g.indent_blankline_show_trailing_blankline_indent = false
-      vim.g.indent_blankline_show_current_context = true
-      vim.g.indent_blankline_show_first_indent_level = false
-      vim.g.indent_blankline_use_treesitter = true
-      vim.g.indent_blankline_filetype = { 'python', "sh", 'go' }
-      vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
-      vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
-      vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
-      vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
-      vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
-      vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
-      vim.g.indent_blankline_context_patterns = {
-        "class",
-        "return",
-        "function",
-        "method",
-        "^if",
-        "^while",
-        "jsx_element",
-        "^for",
-        "^object",
-        "^table",
-        "block",
-        "arguments",
-        "if_statement",
-        "else_clause",
-        "jsx_element",
-        "jsx_self_closing_element",
-        "try_statement",
-        "catch_clause",
-        "import_statement",
-        "operation_type",
-      }
-    end
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects', lock = true },
   {
@@ -738,7 +705,6 @@ lvim.plugins = {
   { 'mhartington/oceanic-next', lock = true },
   { 'patstockwell/vim-monokai-tasty', lock = true },
   { 'KeitaNakamura/neodark.vim', lock = true },
-  { 'catppuccin/nvim' },
   { "sainnhe/sonokai", lock = true },
   { "sickill/vim-monokai" },
   { "AckslD/nvim-neoclip.lua", as = 'neoclip',
