@@ -98,6 +98,7 @@ lvim.builtin.treesitter.rainbow = {
   max_file_lines = 3000, -- Do not enable for files with more than n lines, int
 }
 
+
 lvim.builtin.treesitter.textobjects.select = {
   enable = true,
   -- Automatically jump forward to textobj, similar to targets.vim
@@ -202,6 +203,7 @@ lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope git_files<cr>", "Find 
 lvim.builtin.which_key.mappings["fh"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
 lvim.builtin.which_key.mappings["fg"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
 lvim.builtin.which_key.mappings["fw"] = { "<cmd>Telescope grep_string<cr>", "Searches word under cursor" }
+lvim.builtin.which_key.mappings["fs"] = { "<cmd>Telescope yaml_schema<cr>", "select yaml_schema" }
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
 lvim.builtin.which_key.mappings["lt"] = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace symbol" }
@@ -267,7 +269,6 @@ lvim.builtin.which_key.mappings["cl"] = { "<cmd>lua vim.lsp.codelens.run()<cr>" 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "startify"
-lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.cmp.completion.autocomplete = false
@@ -290,7 +291,7 @@ lvim.builtin.treesitter.ensure_installed = {
   "proto",
   "sql",
   "vue",
-  "hcl"
+  "hcl",
 }
 
 vim.g.indentLine_enabled = 1
@@ -342,11 +343,6 @@ require("indent_blankline").setup {
     "IndentBlanklineIndent5",
     "IndentBlanklineIndent6",
   }
-}
-
-local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
-parser_configs.hcl = {
-  filetype = "hcl", "terraform",
 }
 
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
@@ -464,7 +460,13 @@ lvim.plugins = {
     end,
   },
   {
-    "norcalli/nvim-colorizer.lua", run = ":lua require'colorizer'.setup()"
+    "norcalli/nvim-colorizer.lua", config = function()
+      require 'colorizer'.setup {
+        'css';
+        'javascript';
+        'lua';
+      }
+    end
   },
   { "kkoomen/vim-doge", run = ':call doge#install()' },
   {
@@ -548,28 +550,10 @@ lvim.plugins = {
     end,
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects', lock = true },
-  {
-    "romgrk/nvim-treesitter-context",
-    ft = { "sh", "go", "python", "vue", 'javascript', 'typescript' },
-    config = function()
-      require("treesitter-context").setup {
-        enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-        throttle = true, -- Throttles plugin updates (may improve performance)
-        max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-        patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
-          default = {
-            'class',
-            'function',
-            'method',
-          },
-        },
-      }
-    end
-  },
-  { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', lock = true, ft = "markdown" },
+  { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', ft = "markdown" },
   { 'mzlogin/vim-markdown-toc', ft = 'markdown', lock = true },
-  { 'tpope/vim-markdown', ft = 'markdown', lock = true },
-  { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' }, lock = true },
+  { 'tpope/vim-markdown', ft = 'markdown' },
+  { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' } },
   { 'mtdl9/vim-log-highlighting', lock = true },
   { 'kevinhwang91/nvim-hlslens',
     config = function()
@@ -623,6 +607,7 @@ lvim.plugins = {
       require("telescope").load_extension("neoclip")
       require("telescope").load_extension("frecency")
       require('telescope').load_extension("macroscope")
+      require("telescope").load_extension("yaml_schema")
       -- require("telescope").load_extension("dap")
     end
   },
@@ -686,17 +671,7 @@ lvim.plugins = {
         clear_empty_lines = false, -- clear line after escaping if there is only whitespace
         keys = "<Esc>", -- keys used for escaping, if it is a function will use the result everytime
       })
-    end },
-  {
-    "folke/styler.nvim",
-    config = function()
-      require("styler").setup({
-        themes = {
-          markdown = { colorscheme = "monokai" },
-          help = { colorscheme = "monokai" },
-        },
-      })
-    end,
+    end
   },
   { "hzchirs/vim-material", lock = true },
   { 'projekt0n/github-nvim-theme', lock = true },
@@ -707,6 +682,19 @@ lvim.plugins = {
   { 'KeitaNakamura/neodark.vim', lock = true },
   { "sainnhe/sonokai", lock = true },
   { "sickill/vim-monokai" },
+  { "someone-stole-my-name/yaml-companion.nvim",
+    requires = {
+      { "neovim/nvim-lspconfig" },
+      { "nvim-lua/plenary.nvim" },
+      { "nvim-telescope/telescope.nvim" },
+    },
+    config = function()
+      local cfg = require("yaml-companion").setup({
+      })
+      require("lspconfig")["yamlls"].setup(cfg)
+      require("telescope").load_extension("yaml_schema")
+    end,
+  },
   { "AckslD/nvim-neoclip.lua", as = 'neoclip',
     config = function()
       require('neoclip').setup(
