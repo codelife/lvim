@@ -12,7 +12,7 @@ an executable
 Path = require('plenary.path')
 lvim.log.level = "warn"
 lvim.colorscheme = "vim-monokai-tasty"
-lvim.builtin.lualine.options.theme = "sonokai"
+lvim.builtin.lualine.options.theme = "palenight"
 lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = true
 lvim.format_on_save = true
@@ -41,39 +41,8 @@ vim.opt.termguicolors = true
 vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
   ["display.ghost_text.enabled"] = true }
 
---[[ lsp installed list ]]
---[[  black ]]
---[[  buf ]]
---[[  css-lsp ]]
---[[  dockerfile-language-server ]]
---[[  eslint_d ]]
---[[  fixjson ]]
---[[  flake8 ]]
---[[  gofumpt ]]
---[[  goimports ]]
---[[  golangci-lint ]]
---[[  golines ]]
---[[  gopls ]]
---[[  html-lsp ]]
---[[  isort ]]
---[[  json-lsp ]]
---[[  lua-language-server ]]
---[[  markdownlint ]]
---[[  prettier ]]
---[[  pyright ]]
---[[  shellcheck ]]
---[[  sql-formatter ]]
---[[  tailwindcss-language-server ]]
---[[  taplo ]]
---[[  typescript-language-server ]]
---[[  vim-language-server ]]
---[[  vue-language-server ]]
---[[  yaml-language-server ]]
---[[  yamlfmt ]]
-
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
-
 --[[ lvim.builtin.treesitter.matchup['enable'] = true ]]
 
 lvim.builtin.comment.pre_hook = function(ctx)
@@ -145,8 +114,7 @@ vim.api.nvim_set_keymap('n', '<M-k>', "", {})
 vim.api.nvim_set_keymap('n', '<M-j>', "", {})
 vim.api.nvim_set_keymap('v', '<M-k>', "", {})
 vim.api.nvim_set_keymap('v', '<M-j>', "", {})
---[[ vim.api.nvim_set_keymap('n', 'ts', "viw:Translate ZH <CR>", { noremap = true, silent = true }) ]]
---[[ vim.api.nvim_set_keymap('v', 'ts', ":Translate ZH <CR>", { noremap = true, silent = true }) ]]
+vim.api.nvim_set_keymap('v', 'ts', ":TranslateW<CR>", { noremap = true, silent = true })
 
 
 vim.api.nvim_set_keymap('', 'f',
@@ -221,7 +189,7 @@ lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.k
 lvim.builtin.which_key.mappings["i"] = { "<cmd>IndentBlanklineToggle<cr>", "blankline toggle" }
 lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" }
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista!!<cr>", "Code Navigate" }
-lvim.builtin.which_key.mappings["ts"] = { "viw:Translate ZH <CR>", "Translate current word" }
+lvim.builtin.which_key.mappings["ts"] = { "<cmd>TranslateW<CR>", "Translate current word" }
 lvim.builtin.which_key.mappings["tf"] = { "<cmd>LvimToggleFormatOnSave<cr>", "FormatOnSaveToggle" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
@@ -710,5 +678,5 @@ lvim.plugins = {
     end
   },
   { "stevearc/dressing.nvim" },
-  { 'uga-rosa/translate.nvim' },
+  { 'voldikss/vim-translator' }
 }

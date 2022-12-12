@@ -12,29 +12,35 @@
 
 # title2
 
-LSP:
-* markdownlint
-* black
-* buf
-* eslint_d
-* fixjson
-* flake8
-* goimports
-* goimports-reviser
-* golangci-lint
-* golines
-* gopls
-* isort
-* json-lsp
-* lua-language-server
-* prettier
-* pyright
-* shellcheck
-* tailwindcss-language-server
-* typescript-language-server
-* vue-language-server
-* yamlfmt
-
+---[[ lsp installed list ]]
+---[[  black ]]
+---[[  buf ]]
+---[[  css-lsp ]]
+---[[  dockerfile-language-server ]]
+---[[  eslint_d ]]
+---[[  fixjson ]]
+---[[  flake8 ]]
+---[[  gofumpt ]]
+---[[  goimports ]]
+---[[  golangci-lint ]]
+---[[  golines ]]
+---[[  gopls ]]
+---[[  html-lsp ]]
+---[[  isort ]]
+---[[  json-lsp ]]
+---[[  lua-language-server ]]
+---[[  markdownlint ]]
+---[[  prettier ]]
+---[[  pyright ]]
+---[[  shellcheck ]]
+---[[  sql-formatter ]]
+---[[  tailwindcss-language-server ]]
+---[[  taplo ]]
+---[[  typescript-language-server ]]
+---[[  vim-language-server ]]
+---[[  vue-language-server ]]
+---[[  yaml-language-server ]]
+---[[  yamlfmt ]]
 
 ## generate current all setting
 lvim --headless +'lua require("lvim.utils").generate_settings()' +qa && sort -o lv-settings.lua{,}
