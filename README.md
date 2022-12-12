@@ -44,3 +44,10 @@
 
 ## generate current all setting
 lvim --headless +'lua require("lvim.utils").generate_settings()' +qa && sort -o lv-settings.lua{,}
+
+edit "lua/lvim/core/lualine/styles.lua" show full filename
+lualine_c = {
+  components.diff,
+  components.python_env,
+  { "filename", path = 2 },
+},
