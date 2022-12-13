@@ -262,42 +262,16 @@ lvim.builtin.treesitter.ensure_installed = {
   "hcl",
 }
 
-vim.g.indentLine_enabled = 1
---[[ vim.g.indent_blankline_filetype_exclude = { "help", "terminal", "dashboard", "vista_kind", "lua", "Trouble", "NvimTree" } ]]
-vim.g.indent_blankline_buftype_exclude = { "terminal", "nofile" }
-vim.g.indent_blankline_show_trailing_blankline_indent = false
-vim.g.indent_blankline_show_current_context = true
-vim.g.indent_blankline_show_first_indent_level = false
-vim.g.indent_blankline_use_treesitter = true
-vim.g.indent_blankline_filetype = { 'python', "sh", 'go' }
+lvim.builtin.indentlines.options.enabled = false
+lvim.builtin.indentlines.options.show_current_context = true
+lvim.builtin.indentlines.options.show_first_indent_level = false
+lvim.builtin.indentlines.options.use_treesitter = true
 vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
 vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
 vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
 vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
 vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
 vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
-vim.g.indent_blankline_context_patterns = {
-  "class",
-  "return",
-  "function",
-  "method",
-  "^if",
-  "^while",
-  "jsx_element",
-  "^for",
-  "^object",
-  "^table",
-  "block",
-  "arguments",
-  "if_statement",
-  "else_clause",
-  "jsx_element",
-  "jsx_self_closing_element",
-  "try_statement",
-  "catch_clause",
-  "import_statement",
-  "operation_type",
-}
 
 require("indent_blankline").setup {
   show_current_context = true,
