@@ -39,7 +39,8 @@ vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
 
 vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
-  ["display.ghost_text.enabled"] = true }
+  ["display.ghost_text.enabled"] = true, ["keymap.manual_complete"] = "<c-t>", ["clients.snippets.weight_adjust"] = 1.1,
+  ["clients.tabnine.weight_adjust"] = 1.2 }
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
@@ -314,7 +315,7 @@ linters.setup {
   { command = "flake8", filetypes = { "python" },
     extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503", "--max-complexity=15" },
   },
-  { command = "golangci-lint", filetypes = { "go" } },
+  --[[ { command = "golangci-lint", filetypes = { "go" } }, ]]
   --[[ { ]]
   --[[   command = "eslint_d", ]]
   --[[   filetypes = { "javascript", "typescript", "vue", "typescriptreact" }, ]]
