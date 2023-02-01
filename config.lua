@@ -176,14 +176,11 @@ lvim.builtin.which_key.mappings["fs"] = { "<cmd>Telescope yaml_schema<cr>", "sel
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
 lvim.builtin.which_key.mappings["lt"] = { "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", "Workspace symbol" }
-lvim.builtin.which_key.mappings["lf"] = { "", "Search history" }
 lvim.builtin.which_key.mappings["lf"] = { "<cmd>Telescope search_history<cr>", "Search history" }
 lvim.builtin.which_key.mappings["ls"] = { "<cmd>Telescope lsp_document_symbols<cr>", "Document symbol" }
-lvim.builtin.which_key.mappings["lr"] = { "", "registers" }
 lvim.builtin.which_key.mappings["lr"] = { "<cmd>lua require'telescope.builtin'.registers{}<cr>, ", "registers" }
 lvim.builtin.which_key.mappings["lm"] = { "<cmd>Telescope macroscope<cr>", "macros" }
 lvim.builtin.which_key.mappings["lh"] = { "<cmd>HopLine<cr>", "hop line" }
-lvim.builtin.which_key.mappings["ll"] = { "", "locate file" }
 lvim.builtin.which_key.mappings["ll"] = { "<cmd>NvimTreeFindFile<cr>", "locate file" }
 lvim.builtin.which_key.mappings["lj"] = { "<cmd>lua require'telescope.builtin'.jumplist{}<cr>", "jumplist" }
 lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.keymaps{}<cr>", "keymaps" }
@@ -199,9 +196,7 @@ lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text fo
 lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff current file" }
 lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
 lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
-lvim.builtin.which_key.mappings["gs"] = { "", "git status" }
-lvim.builtin.which_key.mappings["gs"] = { "<cmd>Neogit<cr>", "git status" }
-lvim.builtin.which_key.mappings["gl"] = { "", "git blame" }
+lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
 lvim.builtin.which_key.mappings["gl"] = { "<cmd>Git blame<cr>", "git blame" }
 lvim.builtin.which_key.mappings["gw"] = { "<cmd>GWrite<cr>", "git write" }
 lvim.builtin.which_key.mappings["gr"] = { "<cmd>Gread<cr>", 'git read' }
@@ -228,8 +223,6 @@ lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = false
 
-lvim.builtin.which_key.mappings["f"] = { "", "file related" }
-lvim.builtin.which_key.mappings["c"] = { "", "code related" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
 lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format()<cr>", 'code format' }
@@ -284,7 +277,6 @@ require("indent_blankline").setup {
     "IndentBlanklineIndent3",
     "IndentBlanklineIndent4",
     "IndentBlanklineIndent5",
-    "IndentBlanklineIndent6",
   }
 }
 
@@ -376,24 +368,7 @@ lvim.plugins = {
   },
   {
     "tpope/vim-fugitive",
-    ft = { "fugitive" },
-    cmd = {
-      "G",
-      "Git",
-      "Gdiffsplit",
-      "GRead",
-      "GWrite",
-      "Ggrep",
-      "GMove",
-      "GDelete",
-      "GBrowse",
-      "GRemove",
-      "GRename",
-      "Glgrep",
-      "Gedit"
-    },
   },
-  { 'TimUntersberger/neogit' },
   { 'sindrets/diffview.nvim' },
   {
     "windwp/nvim-ts-autotag",
@@ -531,16 +506,10 @@ lvim.plugins = {
           autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
             'gitcommit',
           },
-          autosave_only_in_session = false, -- Always autosaves session. If true, only autosaves after a session is active.
+          autosave_only_in_session = true, -- Always autosaves session. If true, only autosaves after a session is active.
           max_path_length = 80, -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
         }
       )
-      vim.cmd([[
-        augroup _open_nvim_tree
-        autocmd! * <buffer>
-        autocmd SessionLoadPost * silent! lua require("nvim-tree").toggle(false, true)
-        augroup end
-        ]])
     end
   },
   { "tami5/sqlite.lua" },
@@ -560,52 +529,6 @@ lvim.plugins = {
     requires = { "tami5/sqlite.lua" },
   },
   { "windwp/nvim-spectre" },
-  -- { "ray-x/lsp_signature.nvim", config = function()
-  --   require("lsp_signature").setup(
-  --     {
-  --       debug = false, -- set to true to enable debug logging
-  --       log_path = "debug_log_file_path", -- debug log path
-  --       verbose = false, -- show debug line number
-  --       bind = true, -- This is mandatory, otherwise border config won't get registered.
-  --       -- If you want to hook lspsaga or other signature handler, pls set to false
-  --       doc_lines = 10, -- will show two lines of comment/doc(if there are more than two lines in doc, will be truncated);
-  --       -- set to 0 if you DO NOT want any API comments be shown
-  --       -- This setting only take effect in insert mode, it does not affect signature help in normal
-  --       -- mode, 10 by default
-  --       floating_window = true, -- show hint in a floating window, set to false for virtual text only mode
-  --       floating_window_above_cur_line = true, -- try to place the floating above the current line when possible Note:
-  --       -- will set to true when fully tested, set to false will use whichever side has more space
-  --       -- this setting will be helpful if you do not want the PUM and floating win overlap
-  --       fix_pos = false, -- set to true, the floating window will not auto-close until finish all parameters
-  --       hint_enable = true, -- virtual hint enable
-  --       hint_prefix = "🐼 ", -- Panda for parameter
-  --       hint_scheme = "Comment",
-  --       use_lspsaga = true, -- set to true if you want to use lspsaga popup
-  --       hi_parameter = "LspSignatureActiveParameter", -- how your parameter will be highlight
-  --       max_height = 12, -- max height of signature floating_window, if content is more than max_height, you can scroll down
-  --       -- to view the hiding contents
-  --       max_width = 120, -- max_width of signature floating_window, line will be wrapped if exceed max_width
-  --       handler_opts = {
-  --         border = "rounded" -- double, rounded, single, shadow, none
-  --       },
-
-  --       always_trigger = false, -- sometime show signature on new line or in middle of parameter can be confusing, set it to false for #58
-
-  --       auto_close_after = nil, -- autoclose signature float win after x sec, disabled if nil.
-  --       extra_trigger_chars = {}, -- Array of extra characters that will trigger signature completion, e.g., {"(", ","}
-  --       zindex = 200, -- by default it will be on top of all floating windows, set to <= 50 send it to bottom
-
-  --       padding = "", -- character to pad on left and right of signature can be ' ', or '|'  etc
-
-  --       transparency = nil, -- disabled by default, allow floating win transparent value 1~100
-  --       shadow_blend = 36, -- if you using shadow as border use this set the opacity
-  --       shadow_guibg = "Black", -- if you using shadow as border use this set the color e.g. 'Green' or '#121315'
-  --       timer_interval = 200, -- default timer check interval set to lower value if you want to reduce latency
-  --       toggle_key = nil, -- toggle signature on and off in insert mode,  e.g. toggle_key = '<M-x>'
-  --     }
-  --   )
-  -- end
-  -- },
   { "max397574/better-escape.nvim",
     config = function()
       require("better_escape").setup({
@@ -624,6 +547,8 @@ lvim.plugins = {
   { 'patstockwell/vim-monokai-tasty', lock = true },
   { 'KeitaNakamura/neodark.vim', lock = true },
   { "sainnhe/sonokai", lock = true },
+  { "Mofiqul/dracula.nvim" },
+  { "ellisonleao/gruvbox.nvim" },
   { "sickill/vim-monokai" },
   { "someone-stole-my-name/yaml-companion.nvim",
     requires = {
@@ -653,5 +578,9 @@ lvim.plugins = {
     end
   },
   { "stevearc/dressing.nvim" },
-  { 'voldikss/vim-translator' }
+  { 'voldikss/vim-translator' },
+  {
+    'stevearc/oil.nvim',
+    config = function() require('oil').setup() end
+  }
 }
