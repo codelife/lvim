@@ -38,10 +38,6 @@ vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
 
-vim.g.coq_settings = { ["clients.tabnine.enabled"] = true, ["auto_start"] = "shut-up",
-  ["display.ghost_text.enabled"] = true, ["keymap.manual_complete"] = "<c-t>", ["clients.snippets.weight_adjust"] = 1.1,
-  ["clients.tabnine.weight_adjust"] = 1.2 }
-
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 --[[ lvim.builtin.treesitter.matchup['enable'] = true ]]
@@ -233,7 +229,6 @@ lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "startify"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
-lvim.builtin.cmp.completion.autocomplete = false
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -321,15 +316,6 @@ lvim.plugins = {
   {
     'sQVe/sort.nvim',
   },
-  {
-    "ms-jpq/coq_nvim", branch = "coq",
-    config = function()
-    end
-  },
-  {
-    "ms-jpq/coq.artifacts", branch = "artifacts"
-  },
-  { "ms-jpq/coq.thirdparty", branch = "3p" },
   { "nacro90/numb.nvim",
     config = function()
       require("numb").setup()
@@ -466,6 +452,12 @@ lvim.plugins = {
     config = function()
       require("lsp_lines").setup({ virtual_lines = true })
     end,
+  },
+  {
+    "tzachar/cmp-tabnine",
+    run = "./install.sh",
+    requires = "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects', lock = true },
   { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', ft = "markdown" },
