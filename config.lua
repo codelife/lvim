@@ -185,6 +185,7 @@ lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" 
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista!!<cr>", "Code Navigate" }
 lvim.builtin.which_key.mappings["ts"] = { "<cmd>TranslateW<CR>", "Translate current word" }
 lvim.builtin.which_key.mappings["tf"] = { "<cmd>LvimToggleFormatOnSave<cr>", "FormatOnSaveToggle" }
+lvim.builtin.which_key.mappings["tn"] = { "<cmd>tabe<cr>", "New file" }
 lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown Preview " }
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text format" }
@@ -212,7 +213,7 @@ lvim.builtin.which_key.mappings['hu'] = { '<cmd>Gitsigns undo_stage_hunk<CR>', "
 lvim.builtin.which_key.mappings['hR'] = { '<cmd>Gitsigns reset_buffer<CR>', "reset buffer" }
 lvim.builtin.which_key.mappings['hp'] = { '<cmd>Gitsigns preview_hunk<CR>', "preview hunk" }
 lvim.builtin.which_key.mappings['hb'] = { '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', "blame line" }
-lvim.builtin.which_key.mappings['tb'] = { '<cmd>Gitsigns toggle_current_line_blame<CR>', "toggle current line blame" }
+lvim.builtin.which_key.mappings['tb'] = { '<cmd>TroubleToggle<CR>', "Troubleshoot" }
 lvim.builtin.which_key.mappings['hd'] = { '<cmd>Gitsigns diffthis<CR>', "diff this" }
 lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
 
@@ -310,6 +311,63 @@ linters.setup {
 }
 -- Additional Plugins
 lvim.plugins = {
+  { "zbirenbaum/copilot.lua",
+    event = { "VimEnter" },
+    config = function()
+      require("copilot").setup {
+        ---@class copilot_config_panel
+        panel = {
+          enabled = true,
+          auto_refresh = false,
+          ---@type table<'accept'|'next'|'prev'|'dismiss', false|string>
+          keymap = {
+            jump_prev = "[[",
+            jump_next = "]]",
+            accept = "<CR>",
+            refresh = "gr",
+            open = "<C-m>",
+          },
+          layout = {
+            position = "bottom",
+            ratio = 0.4
+          }
+        },
+        ---@class copilot_config_suggestion
+        suggestion = {
+          enabled = true,
+          auto_trigger = false,
+          debounce = 75,
+          ---@type table<'accept'|'next'|'prev'|'dismiss', false|string>
+          keymap = {
+            accept = "<C-l>",
+            accept_word = false,
+            accept_line = false,
+            next = "<C-]>",
+            prev = "<C-[>",
+            dismiss = "<C-c>",
+          },
+        },
+        ---@deprecated
+        ft_disable = nil,
+        ---@type table<string, boolean>
+        filetypes = {},
+        copilot_node_command = "node",
+
+        server_opts_overrides = {
+          trace = "verbose",
+          settings = {
+            advanced = {
+              listCount = 5, -- #completions for panel
+              inlineSuggestCount = 3, -- #completions for getCompletions
+            }
+          },
+        }
+      }
+    end,
+  },
+  { "zbirenbaum/copilot-cmp",
+    after = { "copilot.lua", "nvim-cmp" },
+  },
   {
     "p00f/nvim-ts-rainbow",
   },
@@ -384,11 +442,6 @@ lvim.plugins = {
         opacity = nil; -- 0-100 opacity level of the floating window where 100 is fully transparent.
         post_open_hook = nil; -- A function taking two arguments, a buffer and a window to be ran as a hook.
         resizing_mappings = true;
-        -- You can use "default_mappings = true" setup option
-        -- Or explicitly set keybindings
-        -- vim.cmd("nnoremap gpd <cmd>lua require('goto-preview').goto_preview_definition()<CR>")
-        -- vim.cmd("nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>")
-        -- vim.cmd("nnoremap gP <cmd>lua require('goto-preview').close_all_win()<CR>")
       }
     end,
     keys = { "g" }
@@ -559,7 +612,7 @@ lvim.plugins = {
     config = function()
       require('neoclip').setup(
         {
-          history = 1000,
+          history = 500,
           enable_persistent_history = true,
           length_limit = 1048576,
           continuous_sync = true,
@@ -570,9 +623,15 @@ lvim.plugins = {
     end
   },
   { "stevearc/dressing.nvim" },
-  { 'voldikss/vim-translator' },
+  { 'voldikss/vim-translator',
+    config = function()
+      vim.g.translator_default_engines = { "bing" }
+    end,
+  },
   {
     'stevearc/oil.nvim',
     config = function() require('oil').setup() end
-  }
+  },
 }
+lvim.builtin.cmp.formatting.source_names["copilot"] = "(Copilot)"
+table.insert(lvim.builtin.cmp.sources, 1, { name = "copilot" })
