@@ -220,6 +220,7 @@ lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = false
 
+lvim.builtin.which_key.mappings["c"] = { "" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
 lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format()<cr>", 'code format' }
@@ -250,6 +251,8 @@ lvim.builtin.treesitter.ensure_installed = {
   "sql",
   "vue",
   "hcl",
+  "regex",
+  "markdown",
 }
 
 lvim.builtin.indentlines.options.enabled = false
@@ -312,6 +315,7 @@ linters.setup {
 -- Additional Plugins
 lvim.plugins = {
   { "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
     event = { "VimEnter" },
     config = function()
       require("copilot").setup {
@@ -325,7 +329,7 @@ lvim.plugins = {
             jump_next = "]]",
             accept = "<CR>",
             refresh = "gr",
-            open = "<C-m>",
+            open = "<c-k>",
           },
           layout = {
             position = "bottom",
@@ -335,20 +339,18 @@ lvim.plugins = {
         ---@class copilot_config_suggestion
         suggestion = {
           enabled = true,
-          auto_trigger = false,
-          debounce = 75,
+          auto_trigger = true,
+          debounce = 100,
           ---@type table<'accept'|'next'|'prev'|'dismiss', false|string>
           keymap = {
             accept = "<C-l>",
             accept_word = false,
             accept_line = false,
-            next = "<C-]>",
-            prev = "<C-[>",
+            next = "<C-j>",
+            prev = "<C-->",
             dismiss = "<C-c>",
           },
         },
-        ---@deprecated
-        ft_disable = nil,
         ---@type table<string, boolean>
         filetypes = {},
         copilot_node_command = "node",
@@ -367,6 +369,9 @@ lvim.plugins = {
   },
   { "zbirenbaum/copilot-cmp",
     after = { "copilot.lua", "nvim-cmp" },
+    config = function()
+      require("copilot_cmp").setup()
+    end
   },
   {
     "p00f/nvim-ts-rainbow",
@@ -631,6 +636,67 @@ lvim.plugins = {
   {
     'stevearc/oil.nvim',
     config = function() require('oil').setup() end
+  },
+  {
+    "folke/noice.nvim",
+    config = function()
+      require("noice").setup({
+        messages = {
+          -- NOTE: If you enable messages, then the cmdline is enabled automatically.
+          -- This is a current Neovim limitation.
+          enabled = true, -- enables the Noice messages UI
+          view = "mini", -- default view for messages
+          view_error = "mini", -- view for errors
+          view_warn = "mini", -- view for warnings
+          view_history = "messages", -- view for :messages
+          view_search = false, -- view for search count messages. Set to `false` to disable
+        }, -- add any options here
+        lsp = {
+          progress = {
+            enabled = false,
+          }
+        },
+        views = {
+          mini = {
+            backend = "mini",
+            relative = "editor",
+            align = "message-left",
+            timeout = 1300,
+            reverse = true,
+            focusable = false,
+            position = {
+              row = -1,
+              col = 0,
+              -- col = 0,
+            },
+            size = "auto",
+            border = {
+              style = "none",
+            },
+            zindex = 60,
+            win_options = {
+              winblend = 30,
+              winhighlight = {
+                Normal = "NoiceMini",
+                IncSearch = "",
+                Search = "",
+              },
+            },
+          },
+        }
+      })
+      require("notify").setup({
+        background_colour = "#181B24",
+      })
+    end,
+    requires = {
+      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+      "MunifTanjim/nui.nvim",
+      -- OPTIONAL:
+      --   `nvim-notify` is only needed, if you want to use the notification view.
+      --   If not available, we use `mini` as the fallback
+      "rcarriga/nvim-notify",
+    }
   },
 }
 lvim.builtin.cmp.formatting.source_names["copilot"] = "(Copilot)"
