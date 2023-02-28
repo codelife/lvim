@@ -41,7 +41,6 @@ vim.opt.termguicolors = true
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 --[[ lvim.builtin.treesitter.matchup['enable'] = true ]]
-
 lvim.builtin.comment.pre_hook = function(ctx)
   local U = require 'Comment.utils'
 
@@ -104,6 +103,10 @@ vim.api.nvim_set_keymap('n', 'gi', "<cmd>lua require('goto-preview').goto_previe
   { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<c-p>', "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap('n', '<c-n>', "<cmd>BufferLineCycleNext<cr>", {})
+--[[ vim.api.nvim_set_keymap('n', '<space>,', "%", {}) ]]
+--[[ vim.api.nvim_set_keymap('n', '<space>y', "y$", {}) ]]
+--[[ vim.api.nvim_set_keymap('n', '<space>de', "D", {}) ]]
+--[[ vim.api.nvim_set_keymap('n', '<space>ce', "C", {}) ]]
 vim.api.nvim_set_keymap('n', ';w', "<cmd>w<cr>", {})
 vim.api.nvim_set_keymap('n', ';q', "<cmd>BufferKill<cr>", {})
 vim.api.nvim_set_keymap('n', ';h', "<cmd>nohlsearch<cr>", {})
@@ -205,7 +208,7 @@ lvim.builtin.which_key.mappings["gh"] = { "<cmd>diffget //3<cr>", 'diffget right
 -- Gitsigns map
 lvim.builtin.which_key.mappings["j"] = { "<cmd>Gitsigns next_hunk<CR>", "next hunk" }
 lvim.builtin.which_key.mappings["k"] = { "<cmd>Gitsigns prev_hunk<CR>", "pre hunk" }
-lvim.builtin.which_key.mappings["y"] = { "<cmd>Telescope neoclip<CR>", "show clipboard" }
+lvim.builtin.which_key.mappings["py"] = { "<cmd>Telescope neoclip<cr>", "show clipboard" }
 lvim.builtin.which_key.mappings['hs'] = { '<cmd>Gitsigns stage_hunk<CR>', "stage hunk" }
 lvim.builtin.which_key.mappings['hr'] = { '<cmd>Gitsigns reset_hunk<CR>', "reset hunk" }
 lvim.builtin.which_key.mappings['hS'] = { '<cmd>Gitsigns stage_buffer<CR>', "stage buffer" }
@@ -282,11 +285,11 @@ require("indent_blankline").setup {
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "black", filetypes = { "python" }, extra_args = { "-l 120" } },
-  { command = "isort", filetypes = { "python" } },
-  { command = "gofumpt", filetypes = { "go" } },
-  { command = "goimports", filetypes = { "go" } },
-  { command = "golines", filetypes = { "go" }, extra_args = { "-m 120" } },
+  { command = "black",         filetypes = { "python" }, extra_args = { "-l 120" } },
+  { command = "isort",         filetypes = { "python" } },
+  { command = "gofumpt",       filetypes = { "go" } },
+  { command = "goimports",     filetypes = { "go" } },
+  { command = "golines",       filetypes = { "go" },     extra_args = { "-m 120" } },
   { command = "sql_formatter", filetypes = { "sql" } },
   {
     command = "prettier",
@@ -428,25 +431,27 @@ lvim.plugins = {
   },
   {
     "norcalli/nvim-colorizer.lua", config = function()
-      require 'colorizer'.setup {
-        'css';
-        'javascript';
-        'lua';
-      }
-    end
+    require 'colorizer'.setup {
+      'css',
+      'javascript',
+      'lua',
+      'typescriptreact',
+      'vue'
+    }
+  end
   },
-  { "kkoomen/vim-doge", run = ':call doge#install()' },
+  { "kkoomen/vim-doge",      run = ':call doge#install()' },
   {
     "rmagatti/goto-preview",
     config = function()
       require('goto-preview').setup {
-        width = 121; -- Width of the floating window
-        height = 40; -- Height of the floating window
-        default_mappings = true; -- Bind default mappings
-        debug = false; -- Print debug information
-        opacity = nil; -- 0-100 opacity level of the floating window where 100 is fully transparent.
-        post_open_hook = nil; -- A function taking two arguments, a buffer and a window to be ran as a hook.
-        resizing_mappings = true;
+        width = 121, -- Width of the floating window
+        height = 40, -- Height of the floating window
+        default_mappings = true, -- Bind default mappings
+        debug = false, -- Print debug information
+        opacity = nil, -- 0-100 opacity level of the floating window where 100 is fully transparent.
+        post_open_hook = nil, -- A function taking two arguments, a buffer and a window to be ran as a hook.
+        resizing_mappings = true,
       }
     end,
     keys = { "g" }
@@ -517,12 +522,12 @@ lvim.plugins = {
     requires = "hrsh7th/nvim-cmp",
     event = "InsertEnter",
   },
-  { 'nvim-treesitter/nvim-treesitter-textobjects', lock = true },
-  { 'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', ft = "markdown" },
-  { 'mzlogin/vim-markdown-toc', ft = 'markdown', lock = true },
-  { 'tpope/vim-markdown', ft = 'markdown' },
-  { 'hotoo/pangu.vim', ft = { 'markdown', 'vimwiki', 'text' } },
-  { 'mtdl9/vim-log-highlighting', lock = true },
+  { 'nvim-treesitter/nvim-treesitter-textobjects', },
+  { 'iamcco/markdown-preview.nvim',                run = 'cd app && yarn install',        ft = "markdown" },
+  { 'mzlogin/vim-markdown-toc',                    ft = 'markdown', },
+  { 'tpope/vim-markdown',                          ft = 'markdown' },
+  { 'hotoo/pangu.vim',                             ft = { 'markdown', 'vimwiki', 'text' } },
+  { 'mtdl9/vim-log-highlighting', },
   { 'kevinhwang91/nvim-hlslens',
     config = function()
       require('hlslens').setup()
@@ -535,7 +540,7 @@ lvim.plugins = {
       require("user.todo-comment")
     end,
   },
-  { 'michaelb/sniprun', run = 'bash ./install.sh' },
+  { 'michaelb/sniprun',             run = 'bash ./install.sh' },
   { 'liuchengxu/vista.vim',
     cmd = 'Vista',
     config = function()
@@ -589,14 +594,14 @@ lvim.plugins = {
       })
     end
   },
-  { "hzchirs/vim-material", lock = true },
-  { 'projekt0n/github-nvim-theme', lock = true },
+  { "hzchirs/vim-material", },
+  { 'projekt0n/github-nvim-theme', },
   { "EdenEast/nightfox.nvim" },
-  { 'phanviet/vim-monokai-pro', lock = true },
-  { 'mhartington/oceanic-next', lock = true },
-  { 'patstockwell/vim-monokai-tasty', lock = true },
-  { 'KeitaNakamura/neodark.vim', lock = true },
-  { "sainnhe/sonokai", lock = true },
+  { 'phanviet/vim-monokai-pro', },
+  { 'mhartington/oceanic-next', },
+  { 'patstockwell/vim-monokai-tasty', },
+  { 'KeitaNakamura/neodark.vim', },
+  { "sainnhe/sonokai", },
   { "Mofiqul/dracula.nvim" },
   { "ellisonleao/gruvbox.nvim" },
   { "sickill/vim-monokai" },
@@ -638,6 +643,18 @@ lvim.plugins = {
     config = function() require('oil').setup() end
   },
   {
+    'gelguy/wilder.nvim',
+    config = function()
+      local wilder = require('wilder')
+      wilder.setup({ modes = { '/', '?' } })
+      wilder.set_option('renderer', wilder.popupmenu_renderer({
+        highlighter = wilder.basic_highlighter(),
+        left = { ' ', wilder.popupmenu_devicons() },
+        right = { ' ', wilder.popupmenu_scrollbar() },
+      }))
+    end,
+  },
+  {
     "folke/noice.nvim",
     config = function()
       require("noice").setup({
@@ -645,7 +662,7 @@ lvim.plugins = {
           -- NOTE: If you enable messages, then the cmdline is enabled automatically.
           -- This is a current Neovim limitation.
           enabled = true, -- enables the Noice messages UI
-          view = false, -- default view for messages
+          view = "mini", -- default view for messages
           view_error = "notify", -- view for errors
           view_warn = false, -- view for warnings
           view_history = "messages", -- view for :messages
