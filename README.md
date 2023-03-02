@@ -1,53 +1,37 @@
-# lvim
+
 <!-- vim-markdown-toc Marked -->
 
-* [title1](#title1)
-* [title2](#title2)
+* [lvim settings](#lvim-settings)
+* [init cmd](#init-cmd)
     * [generate current all setting](#generate-current-all-setting)
+    * [show full filename](#show-full-filename)
 
 <!-- vim-markdown-toc -->
-  lunarvim config
 
-# title1
+# lvim settings
 
-# title2
+ **never put package.json and package-lock.json in dir HOME**
 
----[[ lsp installed list ]]
----[[  black ]]
----[[  buf ]]
----[[  css-lsp ]]
----[[  dockerfile-language-server ]]
----[[  eslint_d ]]
----[[  fixjson ]]
----[[  flake8 ]]
----[[  gofumpt ]]
----[[  goimports ]]
----[[  golangci-lint ]]
----[[  golines ]]
----[[  gopls ]]
----[[  html-lsp ]]
----[[  isort ]]
----[[  json-lsp ]]
----[[  lua-language-server ]]
----[[  markdownlint ]]
----[[  prettier ]]
----[[  pyright ]]
----[[  shellcheck ]]
----[[  sql-formatter ]]
----[[  tailwindcss-language-server ]]
----[[  taplo ]]
----[[  typescript-language-server ]]
----[[  vim-language-server ]]
----[[  vue-language-server ]]
----[[  yaml-language-server ]]
----[[  yamlfmt ]]
+# init cmd
+```shell
+:Copilot auth
+:CmpTabnineHub
+```
 
 ## generate current all setting
-lvim --headless +'lua require("lvim.utils").generate_settings()' +qa && sort -o lv-settings.lua{,}
 
-edit "lua/lvim/core/lualine/styles.lua" show full filename
+```shell
+lvim --headless +'lua require("lvim.utils").generate_settings()' +qa && sort -o lv-settings.lua{,}
+```
+## show full filename
+
+edit "~/.local/share/lunarvim/lvim/lua/lvim/core/lualine/styles.lua"
+
+options => style.lvim
+
+```shell
 lualine_c = {
   components.diff,
   components.python_env,
   { "filename", path = 2 },
-},
+}
