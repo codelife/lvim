@@ -31,7 +31,7 @@ lvim.builtin.bufferline.options.sort_by = "directory"
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldenable = true -- no fold to be applied when open a file
+vim.opt.foldenable = true   -- no fold to be applied when open a file
 vim.opt.foldlevel = 99
 vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
@@ -59,7 +59,7 @@ end
 
 lvim.builtin.treesitter.rainbow = {
   enable = true,
-  extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+  extended_mode = true,  -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
   max_file_lines = 3000, -- Do not enable for files with more than n lines, int
 }
 
@@ -70,13 +70,13 @@ lvim.builtin.treesitter.textobjects.select = {
   lookahead = true,
   keymaps = {
     -- You can use the capture groups defined in textobjects.scm
-    ["af"] = "@conditional.outer",
-    ["if"] = "@conditional.inner",
-    ["ic"] = "@comment.outer",
-    ["il"] = "@loop.inner",
-    ["al"] = "@loop.outer",
-    ["ak"] = "@block.outer",
-    ["ik"] = "@block.inner",
+        ["af"] = "@conditional.outer",
+        ["if"] = "@conditional.inner",
+        ["ic"] = "@comment.outer",
+        ["il"] = "@loop.inner",
+        ["al"] = "@loop.outer",
+        ["ak"] = "@block.outer",
+        ["ik"] = "@block.inner",
   }
 }
 
@@ -103,10 +103,10 @@ vim.api.nvim_set_keymap('n', 'gi', "<cmd>lua require('goto-preview').goto_previe
   { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<c-p>', "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap('n', '<c-n>', "<cmd>BufferLineCycleNext<cr>", {})
---[[ vim.api.nvim_set_keymap('n', '<space>,', "%", {}) ]]
---[[ vim.api.nvim_set_keymap('n', '<space>y', "y$", {}) ]]
---[[ vim.api.nvim_set_keymap('n', '<space>de', "D", {}) ]]
---[[ vim.api.nvim_set_keymap('n', '<space>ce', "C", {}) ]]
+vim.api.nvim_set_keymap('n', '<space>,', "%", {})
+vim.api.nvim_set_keymap('n', '<space>y', "y$", {})
+vim.api.nvim_set_keymap('n', '<space>de', "D", {})
+vim.api.nvim_set_keymap('n', '<space>ce', "C", {})
 vim.api.nvim_set_keymap('n', ';w', "<cmd>w<cr>", {})
 vim.api.nvim_set_keymap('n', ';q', "<cmd>BufferKill<cr>", {})
 vim.api.nvim_set_keymap('n', ';h', "<cmd>nohlsearch<cr>", {})
@@ -256,6 +256,7 @@ lvim.builtin.treesitter.ensure_installed = {
   "hcl",
   "regex",
   "markdown",
+  "graphql",
 }
 
 lvim.builtin.indentlines.options.enabled = false
@@ -291,6 +292,7 @@ formatters.setup {
   { command = "goimports",     filetypes = { "go" } },
   { command = "golines",       filetypes = { "go" },     extra_args = { "-m 120" } },
   { command = "sql_formatter", filetypes = { "sql" } },
+  { command = "buf",           filetypes = { "proto" } },
   {
     command = "prettier",
     extra_args = { "--print-with", "120" },
@@ -306,9 +308,12 @@ formatters.setup {
 -- -- set additional linters
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
-  { command = "flake8", filetypes = { "python" },
+  {
+    command = "flake8",
+    filetypes = { "python" },
     extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503", "--max-complexity=15" },
   },
+  { command = "buf", filetypes = { "proto" } },
   --[[ { command = "golangci-lint", filetypes = { "go" } }, ]]
   --[[ { ]]
   --[[   command = "eslint_d", ]]
@@ -317,7 +322,8 @@ linters.setup {
 }
 -- Additional Plugins
 lvim.plugins = {
-  { "zbirenbaum/copilot.lua",
+  {
+    "zbirenbaum/copilot.lua",
     cmd = "Copilot",
     event = { "VimEnter" },
     config = function()
@@ -362,7 +368,7 @@ lvim.plugins = {
           trace = "verbose",
           settings = {
             advanced = {
-              listCount = 5, -- #completions for panel
+              listCount = 5,          -- #completions for panel
               inlineSuggestCount = 3, -- #completions for getCompletions
             }
           },
@@ -370,7 +376,8 @@ lvim.plugins = {
       }
     end,
   },
-  { "zbirenbaum/copilot-cmp",
+  {
+    "zbirenbaum/copilot-cmp",
     after = { "copilot.lua", "nvim-cmp" },
     config = function()
       require("copilot_cmp").setup()
@@ -382,7 +389,8 @@ lvim.plugins = {
   {
     'sQVe/sort.nvim',
   },
-  { "nacro90/numb.nvim",
+  {
+    "nacro90/numb.nvim",
     config = function()
       require("numb").setup()
     end
@@ -430,27 +438,28 @@ lvim.plugins = {
     end,
   },
   {
-    "norcalli/nvim-colorizer.lua", config = function()
-    require 'colorizer'.setup {
-      'css',
-      'javascript',
-      'lua',
-      'typescriptreact',
-      'vue'
-    }
-  end
+    "norcalli/nvim-colorizer.lua",
+    config = function()
+      require 'colorizer'.setup {
+        'css',
+        'javascript',
+        'lua',
+        'typescriptreact',
+        'vue'
+      }
+    end
   },
   { "kkoomen/vim-doge",      run = ':call doge#install()' },
   {
     "rmagatti/goto-preview",
     config = function()
       require('goto-preview').setup {
-        width = 121, -- Width of the floating window
-        height = 40, -- Height of the floating window
+        width = 121,             -- Width of the floating window
+        height = 40,             -- Height of the floating window
         default_mappings = true, -- Bind default mappings
-        debug = false, -- Print debug information
-        opacity = nil, -- 0-100 opacity level of the floating window where 100 is fully transparent.
-        post_open_hook = nil, -- A function taking two arguments, a buffer and a window to be ran as a hook.
+        debug = false,           -- Print debug information
+        opacity = nil,           -- 0-100 opacity level of the floating window where 100 is fully transparent.
+        post_open_hook = nil,    -- A function taking two arguments, a buffer and a window to be ran as a hook.
         resizing_mappings = true,
       }
     end,
@@ -497,13 +506,13 @@ lvim.plugins = {
       require("dial.config").augends:register_group {
         -- default augends used when no group name is specified
         default = {
-          augend.integer.alias.decimal, -- nonnegative decimal number (0, 1, 2, 3, ...)
-          augend.integer.alias.hex, -- nonnegative hex number  (0x01, 0x1a1f, etc.)
-          augend.constant.alias.bool, -- boolean value (true <-> false)
+          augend.integer.alias.decimal,  -- nonnegative decimal number (0, 1, 2, 3, ...)
+          augend.integer.alias.hex,      -- nonnegative hex number  (0x01, 0x1a1f, etc.)
+          augend.constant.alias.bool,    -- boolean value (true <-> false)
           augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
           augend.constant.new {
             elements = { "True", "False" },
-            word = true, -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
+            word = true,   -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
             cyclic = true, -- "or" is incremented into "and".
           },
         },
@@ -528,7 +537,8 @@ lvim.plugins = {
   { 'tpope/vim-markdown',                          ft = 'markdown' },
   { 'hotoo/pangu.vim',                             ft = { 'markdown', 'vimwiki', 'text' } },
   { 'mtdl9/vim-log-highlighting', },
-  { 'kevinhwang91/nvim-hlslens',
+  {
+    'kevinhwang91/nvim-hlslens',
     config = function()
       require('hlslens').setup()
     end
@@ -541,34 +551,37 @@ lvim.plugins = {
     end,
   },
   { 'michaelb/sniprun',             run = 'bash ./install.sh' },
-  { 'liuchengxu/vista.vim',
+  {
+    'liuchengxu/vista.vim',
     cmd = 'Vista',
     config = function()
       vim.g.vista_default_executive = 'nvim_lsp'
     end
   },
   { "simrat39/symbols-outline.nvim" },
-  { "Shatur/neovim-session-manager",
+  {
+    "Shatur/neovim-session-manager",
     config = function()
       require("session_manager").setup(
         {
-          sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
-          path_replacer = '__', -- The character to which the path separator will be replaced for session files.
-          colon_replacer = '++', -- The character to which the colon symbol will be replaced for session files.
+          sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'),               -- The directory where the session files will be saved.
+          path_replacer = '__',                                                      -- The character to which the path separator will be replaced for session files.
+          colon_replacer = '++',                                                     -- The character to which the colon symbol will be replaced for session files.
           autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
-          autosave_last_session = true, -- Automatically save last session on exit and on session switch.
-          autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
-          autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
+          autosave_last_session = true,                                              -- Automatically save last session on exit and on session switch.
+          autosave_ignore_not_normal = true,                                         -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
+          autosave_ignore_filetypes = {                                              -- All buffers of these file types will be closed before the session is saved.
             'gitcommit',
           },
           autosave_only_in_session = true, -- Always autosaves session. If true, only autosaves after a session is active.
-          max_path_length = 80, -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
+          max_path_length = 80,            -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
         }
       )
     end
   },
   { "tami5/sqlite.lua" },
-  { 'nvim-telescope/telescope-ui-select.nvim',
+  {
+    'nvim-telescope/telescope-ui-select.nvim',
     config = function()
       require("telescope").load_extension("ui-select")
       require("telescope").load_extension("neoclip")
@@ -584,13 +597,14 @@ lvim.plugins = {
     requires = { "tami5/sqlite.lua" },
   },
   { "windwp/nvim-spectre" },
-  { "max397574/better-escape.nvim",
+  {
+    "max397574/better-escape.nvim",
     config = function()
       require("better_escape").setup({
-        mapping = { "jk", "jj" }, -- a table with mappings to use
+        mapping = { "jk", "jj" },   -- a table with mappings to use
         timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
-        clear_empty_lines = false, -- clear line after escaping if there is only whitespace
-        keys = "<Esc>", -- keys used for escaping, if it is a function will use the result everytime
+        clear_empty_lines = false,  -- clear line after escaping if there is only whitespace
+        keys = "<Esc>",             -- keys used for escaping, if it is a function will use the result everytime
       })
     end
   },
@@ -605,7 +619,8 @@ lvim.plugins = {
   { "Mofiqul/dracula.nvim" },
   { "ellisonleao/gruvbox.nvim" },
   { "sickill/vim-monokai" },
-  { "someone-stole-my-name/yaml-companion.nvim",
+  {
+    "someone-stole-my-name/yaml-companion.nvim",
     requires = {
       { "neovim/nvim-lspconfig" },
       { "nvim-lua/plenary.nvim" },
@@ -618,7 +633,9 @@ lvim.plugins = {
       require("telescope").load_extension("yaml_schema")
     end,
   },
-  { "AckslD/nvim-neoclip.lua", as = 'neoclip',
+  {
+    "AckslD/nvim-neoclip.lua",
+    as = 'neoclip',
     config = function()
       require('neoclip').setup(
         {
@@ -633,7 +650,8 @@ lvim.plugins = {
     end
   },
   { "stevearc/dressing.nvim" },
-  { 'voldikss/vim-translator',
+  {
+    'voldikss/vim-translator',
     config = function()
       vim.g.translator_default_engines = { "bing" }
     end,
@@ -661,13 +679,13 @@ lvim.plugins = {
         messages = {
           -- NOTE: If you enable messages, then the cmdline is enabled automatically.
           -- This is a current Neovim limitation.
-          enabled = true, -- enables the Noice messages UI
-          view = "mini", -- default view for messages
-          view_error = "notify", -- view for errors
-          view_warn = "mini", -- view for warnings
+          enabled = true,            -- enables the Noice messages UI
+          view = "mini",             -- default view for messages
+          view_error = "notify",     -- view for errors
+          view_warn = false,         -- view for warnings
           view_history = "messages", -- view for :messages
-          view_search = false, -- view for search count messages. Set to `false` to disable
-        }, -- add any options here
+          view_search = false,       -- view for search count messages. Set to `false` to disable
+        },                           -- add any options here
         lsp = {
           progress = {
             enabled = false,
@@ -677,7 +695,7 @@ lvim.plugins = {
           mini = {
             backend = "mini",
             relative = "editor",
-            align = "message-left",
+            align = "message-right",
             timeout = 1300,
             reverse = true,
             focusable = false,
