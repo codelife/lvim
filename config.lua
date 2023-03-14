@@ -17,8 +17,8 @@ lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = true
 lvim.format_on_save = true
 lvim.lsp.diagnostics.virtual_text = false
---[[ lvim.lsp.automatic_servers_installation = true ]]
---[[ lvim.lsp.installer.setup.automatic_installation = true ]]
+lvim.lsp.automatic_servers_installation = true
+lvim.lsp.installer.setup.automatic_installation = true
 vim.diagnostic.config({
   virtual_text = false,
 })
@@ -514,6 +514,16 @@ lvim.plugins = {
             elements = { "True", "False" },
             word = true,   -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
             cyclic = true, -- "or" is incremented into "and".
+          },
+          augend.constant.new {
+            elements = { "&&", "||" },
+            word = false,
+            cyclic = true,
+          },
+          augend.constant.new {
+            elements = { "asc", "desc" },
+            word = true,
+            cyclic = true,
           },
         },
       }
