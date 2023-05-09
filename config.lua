@@ -16,7 +16,6 @@ lvim.builtin.lualine.options.theme = "palenight"
 lvim.builtin.lualine.style = "lvim"
 lvim.transparent_window = true
 lvim.format_on_save = true
-lvim.lsp.diagnostics.virtual_text = false
 lvim.lsp.automatic_servers_installation = true
 lvim.lsp.installer.setup.automatic_installation = true
 vim.diagnostic.config({
@@ -24,7 +23,6 @@ vim.diagnostic.config({
 })
 lvim.builtin.nvimtree.setup.view.width = 35
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
-lvim.builtin.telescope.defaults.layout_config.vertical.mirror = false
 lvim.builtin.telescope.defaults.layout_config.width = 0.85
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
 lvim.builtin.bufferline.options.sort_by = "directory"
@@ -443,6 +441,10 @@ lvim.plugins = {
       require 'colorizer'.setup {
         'css',
         'javascript',
+        'typescript',
+        'html',
+        'scss',
+        'sass',
         'lua',
         'typescriptreact',
         'vue'
@@ -546,6 +548,8 @@ lvim.plugins = {
   { 'mzlogin/vim-markdown-toc',                    ft = 'markdown', },
   { 'tpope/vim-markdown',                          ft = 'markdown' },
   { 'hotoo/pangu.vim',                             ft = { 'markdown', 'vimwiki', 'text' } },
+  { "dhruvasagar/vim-table-mode",                  cmd = "TableModeToggle" },
+  --[[ { "mg979/vim-visual-multi" }, ]]
   { 'mtdl9/vim-log-highlighting', },
   {
     'kevinhwang91/nvim-hlslens',
