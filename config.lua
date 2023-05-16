@@ -14,10 +14,14 @@ lvim.log.level = "warn"
 lvim.colorscheme = "vim-monokai-tasty"
 lvim.builtin.lualine.options.theme = "palenight"
 lvim.builtin.lualine.style = "lvim"
+local components = require "lvim.core.lualine.components"
+lvim.builtin.lualine.sections.lualine_c = {
+  components.diff,
+  components.python_env,
+  { "filename", path = 2 },
+}
 lvim.transparent_window = true
 lvim.format_on_save = true
-lvim.lsp.automatic_servers_installation = true
-lvim.lsp.installer.setup.automatic_installation = true
 vim.diagnostic.config({
   virtual_text = false,
 })
@@ -38,7 +42,7 @@ vim.opt.termguicolors = true
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
---[[ lvim.builtin.treesitter.matchup['enable'] = true ]]
+lvim.builtin.treesitter.matchup['enable'] = true
 lvim.builtin.comment.pre_hook = function(ctx)
   local U = require 'Comment.utils'
 
@@ -61,6 +65,23 @@ lvim.builtin.treesitter.rainbow = {
   max_file_lines = 3000, -- Do not enable for files with more than n lines, int
 }
 
+require("mason").setup()
+require("mason-lspconfig").setup {
+  ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "tsserver", "yamlls", "volar", "jsonls",
+    "golangci_lint_ls", "ruff_lsp", "gopls" },
+  automatic_installation = true,
+}
+
+lvim.autocommands = {
+  {
+    "FileType", -- see `:h autocmd-events`
+    {
+      group = "fugitive_setting",
+      pattern = { "fugitive" }, -- see `:h autocmd-events`
+      command = "map <buffer> gpp :Git push<CR>",
+    }
+  },
+}
 
 lvim.builtin.treesitter.textobjects.select = {
   enable = true,
@@ -68,13 +89,13 @@ lvim.builtin.treesitter.textobjects.select = {
   lookahead = true,
   keymaps = {
     -- You can use the capture groups defined in textobjects.scm
-        ["af"] = "@conditional.outer",
-        ["if"] = "@conditional.inner",
-        ["ic"] = "@comment.outer",
-        ["il"] = "@loop.inner",
-        ["al"] = "@loop.outer",
-        ["ak"] = "@block.outer",
-        ["ik"] = "@block.inner",
+    ["af"] = "@conditional.outer",
+    ["if"] = "@conditional.inner",
+    ["ic"] = "@comment.outer",
+    ["il"] = "@loop.inner",
+    ["al"] = "@loop.outer",
+    ["ak"] = "@block.outer",
+    ["ik"] = "@block.inner",
   }
 }
 
@@ -256,31 +277,6 @@ lvim.builtin.treesitter.ensure_installed = {
   "markdown",
   "graphql",
 }
-
-lvim.builtin.indentlines.options.enabled = false
-lvim.builtin.indentlines.options.show_current_context = true
-lvim.builtin.indentlines.options.show_first_indent_level = false
-lvim.builtin.indentlines.options.use_treesitter = true
-vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
-vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
-
-require("indent_blankline").setup {
-  show_current_context = true,
-  show_current_context_start = true,
-  space_char_blankline = " ",
-  char_highlight_list = {
-    "IndentBlanklineIndent1",
-    "IndentBlanklineIndent2",
-    "IndentBlanklineIndent3",
-    "IndentBlanklineIndent4",
-    "IndentBlanklineIndent5",
-  }
-}
-
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
@@ -376,16 +372,17 @@ lvim.plugins = {
   },
   {
     "zbirenbaum/copilot-cmp",
-    after = { "copilot.lua", "nvim-cmp" },
+    event = "InsertEnter",
+    dependencies = { "zbirenbaum/copilot.lua", "hrsh7th/nvim-cmp" },
     config = function()
       require("copilot_cmp").setup()
     end
   },
   {
-    "p00f/nvim-ts-rainbow",
+    "p00f/nvim-ts-rainbow", event = "BufRead",
   },
   {
-    'sQVe/sort.nvim',
+    'sQVe/sort.nvim', event = "BufRead"
   },
   {
     "nacro90/numb.nvim",
@@ -397,8 +394,8 @@ lvim.plugins = {
     "folke/trouble.nvim",
     cmd = "TroubleToggle",
   },
-  { 'tpope/vim-surround' },
-  { 'tpope/vim-repeat' },
+  { 'tpope/vim-surround', event = "BufRead" },
+  { 'tpope/vim-repeat',   event = "BufRead" },
   {
     -- easymotion
     "phaazon/hop.nvim",
@@ -437,6 +434,7 @@ lvim.plugins = {
   },
   {
     "norcalli/nvim-colorizer.lua",
+    event = "BufRead",
     config = function()
       require 'colorizer'.setup {
         'css',
@@ -451,9 +449,10 @@ lvim.plugins = {
       }
     end
   },
-  { "kkoomen/vim-doge",      run = ':call doge#install()' },
+  { "kkoomen/vim-doge",      build = ':call doge#install()' },
   {
     "rmagatti/goto-preview",
+    lazy = true,
     config = function()
       require('goto-preview').setup {
         width = 121,             -- Width of the floating window
@@ -496,7 +495,6 @@ lvim.plugins = {
   {
     "monaqa/dial.nvim",
     event = "BufRead",
-    lock = true,
     config = function()
       vim.api.nvim_set_keymap("n", "<C-a>", require("dial.map").inc_normal(), { noremap = true })
       vim.api.nvim_set_keymap("n", "<C-x>", require("dial.map").dec_normal(), { noremap = true })
@@ -532,25 +530,25 @@ lvim.plugins = {
     end
   },
   {
-    "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
     config = function()
       require("lsp_lines").setup({ virtual_lines = true })
     end,
   },
   {
     "tzachar/cmp-tabnine",
-    run = "./install.sh",
-    requires = "hrsh7th/nvim-cmp",
+    build = "./install.sh",
+    dependencies = "hrsh7th/nvim-cmp",
     event = "InsertEnter",
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects', },
-  { 'iamcco/markdown-preview.nvim',                run = 'cd app && yarn install',        ft = "markdown" },
+  { 'iamcco/markdown-preview.nvim',                build = 'cd app && yarn install',      ft = "markdown" },
   { 'mzlogin/vim-markdown-toc',                    ft = 'markdown', },
   { 'tpope/vim-markdown',                          ft = 'markdown' },
   { 'hotoo/pangu.vim',                             ft = { 'markdown', 'vimwiki', 'text' } },
   { "dhruvasagar/vim-table-mode",                  cmd = "TableModeToggle" },
   --[[ { "mg979/vim-visual-multi" }, ]]
-  { 'mtdl9/vim-log-highlighting', },
+  { 'mtdl9/vim-log-highlighting',                  ft = "log" },
   {
     'kevinhwang91/nvim-hlslens',
     config = function()
@@ -564,7 +562,7 @@ lvim.plugins = {
       require("user.todo-comment")
     end,
   },
-  { 'michaelb/sniprun',             run = 'bash ./install.sh' },
+  { 'michaelb/sniprun',             build = 'bash ./install.sh' },
   {
     'liuchengxu/vista.vim',
     cmd = 'Vista',
@@ -593,7 +591,7 @@ lvim.plugins = {
       )
     end
   },
-  { "tami5/sqlite.lua" },
+  { "tami5/sqlite.lua", lazy = true },
   {
     'nvim-telescope/telescope-ui-select.nvim',
     config = function()
@@ -605,10 +603,10 @@ lvim.plugins = {
       -- require("telescope").load_extension("dap")
     end
   },
-  { 'mbbill/undotree', cmd = 'UndotreeToggle' },
+  { 'mbbill/undotree',  cmd = 'UndotreeToggle', lazy = true },
   {
     "nvim-telescope/telescope-frecency.nvim",
-    requires = { "tami5/sqlite.lua" },
+    dependencies = "tami5/sqlite.lua",
   },
   { "windwp/nvim-spectre" },
   {
@@ -635,7 +633,8 @@ lvim.plugins = {
   { "sickill/vim-monokai" },
   {
     "someone-stole-my-name/yaml-companion.nvim",
-    requires = {
+    ft = "yaml",
+    dependencies = {
       { "neovim/nvim-lspconfig" },
       { "nvim-lua/plenary.nvim" },
       { "nvim-telescope/telescope.nvim" },
@@ -649,7 +648,7 @@ lvim.plugins = {
   },
   {
     "AckslD/nvim-neoclip.lua",
-    as = 'neoclip',
+    name = 'neoclip',
     config = function()
       require('neoclip').setup(
         {
@@ -687,6 +686,33 @@ lvim.plugins = {
     end,
   },
   {
+    "lukas-reineke/indent-blankline.nvim",
+    cmd = "IndentBlanklineToggle",
+    config = function()
+      vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
+      vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
+      require("indent_blankline").setup {
+        enabled = false,
+        show_first_indent_level = false,
+        show_current_context = false,
+        use_treesitter = true,
+        show_current_context_start = true,
+        space_char_blankline = " ",
+        char_highlight_list = {
+          "IndentBlanklineIndent1",
+          "IndentBlanklineIndent2",
+          "IndentBlanklineIndent3",
+          "IndentBlanklineIndent4",
+          "IndentBlanklineIndent5",
+        }
+      }
+    end
+  },
+  {
     "folke/noice.nvim",
     config = function()
       require("noice").setup({
@@ -694,16 +720,22 @@ lvim.plugins = {
           -- NOTE: If you enable messages, then the cmdline is enabled automatically.
           -- This is a current Neovim limitation.
           enabled = true,            -- enables the Noice messages UI
-          view = "mini",             -- default view for messages
+          view = "notify",           -- default view for messages
           view_error = "notify",     -- view for errors
-          view_warn = false,         -- view for warnings
+          view_warn = "notify",      -- view for warnings
           view_history = "messages", -- view for :messages
           view_search = false,       -- view for search count messages. Set to `false` to disable
         },                           -- add any options here
         lsp = {
           progress = {
             enabled = false,
-          }
+          },
+          hover = {
+            enabled = false,
+          },
+          signature = {
+            enabled = false,
+          },
         },
         views = {
           mini = {
@@ -741,7 +773,7 @@ lvim.plugins = {
         background_colour = "#181B24",
       })
     end,
-    requires = {
+    dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",
       -- OPTIONAL:

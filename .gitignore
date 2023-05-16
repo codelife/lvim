@@ -3,3 +3,4 @@ plugin/*
 lv-settings.lua
 sessions/*
 *.sqlite3
+lazy-lock.json
