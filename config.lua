@@ -30,6 +30,9 @@ lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 lvim.builtin.telescope.defaults.layout_config.width = 0.85
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
 lvim.builtin.bufferline.options.sort_by = "directory"
+lvim.builtin.bufferline.options.numbers = "ordinal"
+lvim.builtin.bufferline.options.diagnostics = false
+
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
@@ -42,23 +45,7 @@ vim.opt.termguicolors = true
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
-lvim.builtin.treesitter.matchup['enable'] = true
-lvim.builtin.comment.pre_hook = function(ctx)
-  local U = require 'Comment.utils'
-
-  local location = nil
-  if ctx.ctype == U.ctype.block then
-    location = require('ts_context_commentstring.utils').get_cursor_location()
-  elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
-    location = require('ts_context_commentstring.utils').get_visual_start_location()
-  end
-
-  return require('ts_context_commentstring.internal').calculate_commentstring {
-    key = ctx.ctype == U.ctype.line and '__default' or '__multiline',
-    location = location,
-  }
-end
-
+lvim.builtin.treesitter.matchup.enable = true
 lvim.builtin.treesitter.rainbow = {
   enable = true,
   extended_mode = true,  -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
@@ -68,7 +55,7 @@ lvim.builtin.treesitter.rainbow = {
 require("mason").setup()
 require("mason-lspconfig").setup {
   ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "tsserver", "yamlls", "volar", "jsonls",
-    "golangci_lint_ls", "ruff_lsp", "gopls" },
+    "golangci_lint_ls", "ruff_lsp" },
   automatic_installation = true,
 }
 
@@ -178,7 +165,7 @@ lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["dg"] = { "<Cmd>DogeGenerate<CR>", 'gen doc' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>Telescope buffers<cr>", "List buffers" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
-lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByExtension<cr>", "Sort buffer ext" }
+lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByDirectory<cr>", "Sort buffer directory" }
 lvim.builtin.which_key.mappings["pp"] = { "<cmd>Telescope projects<cr>", "Projects" }
 lvim.builtin.which_key.mappings["ss"] = { "<cmd>SessionManager save_current_session<cr>", "Save current session" }
 lvim.builtin.which_key.mappings["sa"] = { "<cmd>SessionManager load_session<cr>", "Show all session" }
@@ -188,7 +175,7 @@ lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_
 lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", 'ranger' }
 lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope git_files<cr>", "Find file" }
 lvim.builtin.which_key.mappings["fh"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
-lvim.builtin.which_key.mappings["fg"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
+lvim.builtin.which_key.mappings["gf"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
 lvim.builtin.which_key.mappings["fw"] = { "<cmd>Telescope grep_string<cr>", "Searches word under cursor" }
 lvim.builtin.which_key.mappings["fs"] = { "<cmd>Telescope yaml_schema<cr>", "select yaml_schema" }
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
@@ -238,9 +225,6 @@ lvim.builtin.which_key.mappings['hb'] = { '<cmd>lua require"gitsigns".blame_line
 lvim.builtin.which_key.mappings['tb'] = { '<cmd>TroubleToggle<CR>', "Troubleshoot" }
 lvim.builtin.which_key.mappings['hd'] = { '<cmd>Gitsigns diffthis<CR>', "diff this" }
 lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
-
-lvim.builtin.bufferline.options.numbers = "ordinal"
-lvim.builtin.bufferline.options.diagnostics = false
 
 lvim.builtin.which_key.mappings["c"] = { "" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
@@ -392,7 +376,9 @@ lvim.plugins = {
   },
   {
     "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = "TroubleToggle",
+    opts = {},
   },
   { 'tpope/vim-surround', event = "BufRead" },
   { 'tpope/vim-repeat',   event = "BufRead" },
@@ -534,6 +520,10 @@ lvim.plugins = {
     config = function()
       require("lsp_lines").setup({ virtual_lines = true })
     end,
+  },
+  {
+    "williamboman/mason.nvim",
+    build = ":MasonUpdate" -- :MasonUpdate updates registry contents
   },
   {
     "tzachar/cmp-tabnine",
