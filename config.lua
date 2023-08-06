@@ -45,19 +45,12 @@ vim.opt.termguicolors = true
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
-lvim.builtin.treesitter.matchup.enable = true
 lvim.builtin.treesitter.rainbow = {
   enable = true,
   extended_mode = true,  -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
   max_file_lines = 3000, -- Do not enable for files with more than n lines, int
 }
 
-require("mason").setup()
-require("mason-lspconfig").setup {
-  ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "tsserver", "yamlls", "volar", "jsonls",
-    "golangci_lint_ls", "ruff_lsp" },
-  automatic_installation = true,
-}
 
 lvim.autocommands = {
   {
@@ -292,11 +285,6 @@ linters.setup {
     extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503", "--max-complexity=15" },
   },
   { command = "buf", filetypes = { "proto" } },
-  --[[ { command = "golangci-lint", filetypes = { "go" } }, ]]
-  --[[ { ]]
-  --[[   command = "eslint_d", ]]
-  --[[   filetypes = { "javascript", "typescript", "vue", "typescriptreact" }, ]]
-  --[[ }, ]]
 }
 -- Additional Plugins
 lvim.plugins = {
@@ -398,13 +386,6 @@ lvim.plugins = {
       vim.g.rnvimr_draw_border = 1
       vim.g.rnvimr_pick_enable = 1
       vim.g.rnvimr_bw_enable = 1
-    end,
-  },
-  {
-    "andymass/vim-matchup",
-    event = "CursorMoved",
-    config = function()
-      vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
   {
@@ -523,7 +504,14 @@ lvim.plugins = {
   },
   {
     "williamboman/mason.nvim",
-    build = ":MasonUpdate" -- :MasonUpdate updates registry contents
+    config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup {
+        ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "tsserver", "yamlls", "volar", "jsonls",
+          "golangci_lint_ls", "ruff_lsp" },
+        automatic_installation = true,
+      }
+    end
   },
   {
     "tzachar/cmp-tabnine",
@@ -660,18 +648,12 @@ lvim.plugins = {
     end,
   },
   {
-    'stevearc/oil.nvim',
-    config = function() require('oil').setup() end
-  },
-  {
     'gelguy/wilder.nvim',
     config = function()
       local wilder = require('wilder')
       wilder.setup({ modes = { '/', '?' } })
       wilder.set_option('renderer', wilder.popupmenu_renderer({
         highlighter = wilder.basic_highlighter(),
-        left = { ' ', wilder.popupmenu_devicons() },
-        right = { ' ', wilder.popupmenu_scrollbar() },
       }))
     end,
   },
@@ -704,6 +686,7 @@ lvim.plugins = {
   },
   {
     "folke/noice.nvim",
+    event = "VeryLazy",
     config = function()
       require("noice").setup({
         messages = {
@@ -718,12 +701,6 @@ lvim.plugins = {
         },                           -- add any options here
         lsp = {
           progress = {
-            enabled = false,
-          },
-          hover = {
-            enabled = false,
-          },
-          signature = {
             enabled = false,
           },
         },
@@ -764,11 +741,7 @@ lvim.plugins = {
       })
     end,
     dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
     }
   },
