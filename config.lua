@@ -31,7 +31,7 @@ lvim.builtin.telescope.defaults.layout_config.width = 0.85
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
 lvim.builtin.bufferline.options.sort_by = "directory"
 lvim.builtin.bufferline.options.numbers = "ordinal"
-lvim.builtin.bufferline.options.diagnostics = false
+lvim.builtin.bufferline.options.diagnostics = true
 
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
@@ -151,18 +151,15 @@ lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent 
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
-lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>",
+lvim.builtin.which_key.mappings["sw"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>",
   'search current word' }
 lvim.builtin.which_key.mappings["sg"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
-lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["dg"] = { "<Cmd>DogeGenerate<CR>", 'gen doc' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>Telescope buffers<cr>", "List buffers" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
 lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByDirectory<cr>", "Sort buffer directory" }
-lvim.builtin.which_key.mappings["pp"] = { "<cmd>Telescope projects<cr>", "Projects" }
-lvim.builtin.which_key.mappings["ss"] = { "<cmd>SessionManager save_current_session<cr>", "Save current session" }
+lvim.builtin.which_key.mappings["pj"] = { "<cmd>Telescope projects<cr>", "Projects" }
 lvim.builtin.which_key.mappings["sa"] = { "<cmd>SessionManager load_session<cr>", "Show all session" }
-lvim.builtin.which_key.mappings["sl"] = { "<cmd>SessionManager load_last_session<cr>", "Load last session" }
 lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_session<cr>",
   "Restore last session for CurrentDir" }
 lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", 'ranger' }
@@ -178,10 +175,7 @@ lvim.builtin.which_key.mappings["lf"] = { "<cmd>Telescope search_history<cr>", "
 lvim.builtin.which_key.mappings["ls"] = { "<cmd>Telescope lsp_document_symbols<cr>", "Document symbol" }
 lvim.builtin.which_key.mappings["lr"] = { "<cmd>lua require'telescope.builtin'.registers{}<cr>, ", "registers" }
 lvim.builtin.which_key.mappings["lm"] = { "<cmd>Telescope macroscope<cr>", "macros" }
-lvim.builtin.which_key.mappings["lh"] = { "<cmd>HopLine<cr>", "hop line" }
 lvim.builtin.which_key.mappings["ll"] = { "<cmd>NvimTreeFindFile<cr>", "locate file" }
-lvim.builtin.which_key.mappings["lj"] = { "<cmd>lua require'telescope.builtin'.jumplist{}<cr>", "jumplist" }
-lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.keymaps{}<cr>", "keymaps" }
 lvim.builtin.which_key.mappings["i"] = { "<cmd>IndentBlanklineToggle<cr>", "blankline toggle" }
 lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" }
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista!!<cr>", "Code Navigate" }
