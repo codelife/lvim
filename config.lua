@@ -24,6 +24,7 @@ lvim.transparent_window = true
 lvim.format_on_save = true
 vim.diagnostic.config({
   virtual_text = false,
+  -- virtual_lines = { only_current_line = true },
 })
 lvim.builtin.nvimtree.setup.view.width = 35
 lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
@@ -251,23 +252,10 @@ lvim.builtin.treesitter.ensure_installed = {
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "black",         filetypes = { "python" }, extra_args = { "-l 120" } },
-  { command = "isort",         filetypes = { "python" } },
-  { command = "gofumpt",       filetypes = { "go" } },
-  { command = "goimports",     filetypes = { "go" } },
-  { command = "golines",       filetypes = { "go" },     extra_args = { "-m 120" } },
-  { command = "sql_formatter", filetypes = { "sql" } },
-  { command = "buf",           filetypes = { "proto" } },
-  {
-    command = "prettier",
-    extra_args = { "--print-with", "120" },
-    filetypes = { "json", "html", "yaml" },
-  },
-  {
-    command = "eslint_d",
-    extra_args = { "-f", "json", "--stdin", "--stdin-filename", "$FILENAME" },
-    filetypes = { "javascript", "javascriptreact", "vue", "typescriptreact", "typescript" },
-  }
+  { command = "black",     filetypes = { "python" }, extra_args = { "-l 120" } },
+  { command = "gofumpt",   filetypes = { "go" } },
+  { command = "golines",   filetypes = { "go" },     extra_args = { "-m 120" } },
+  { command = "goimports", filetypes = { "go" } },
 }
 
 -- -- set additional linters
@@ -276,9 +264,8 @@ linters.setup {
   {
     command = "flake8",
     filetypes = { "python" },
-    extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503", "--max-complexity=15" },
+    extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503,E203,F841", "--max-complexity=15" },
   },
-  { command = "buf", filetypes = { "proto" } },
 }
 -- Additional Plugins
 lvim.plugins = {
@@ -343,6 +330,11 @@ lvim.plugins = {
     config = function()
       require("copilot_cmp").setup()
     end
+  },
+  {
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {},
   },
   {
     "p00f/nvim-ts-rainbow", event = "BufRead",
@@ -493,7 +485,8 @@ lvim.plugins = {
   {
     url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
     config = function()
-      require("lsp_lines").setup({ virtual_lines = true })
+      require("lsp_lines").setup()
+      -- require("lsp_lines").setup({ virtual_lines = true })
     end,
   },
   {
@@ -501,8 +494,8 @@ lvim.plugins = {
     config = function()
       require("mason").setup()
       require("mason-lspconfig").setup {
-        ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "tsserver", "yamlls", "volar", "jsonls",
-          "golangci_lint_ls", "ruff_lsp" },
+        ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "yamlls", "volar", "jsonls", "sql_formatter",
+          "golines", "gofumpt", "goimports", "golangci_lint_ls", "isort" },
         automatic_installation = true,
       }
     end
@@ -593,13 +586,7 @@ lvim.plugins = {
     end
   },
   { "hzchirs/vim-material", },
-  { 'projekt0n/github-nvim-theme', },
-  { "EdenEast/nightfox.nvim" },
-  { 'phanviet/vim-monokai-pro', },
-  { 'mhartington/oceanic-next', },
   { 'patstockwell/vim-monokai-tasty', },
-  { 'KeitaNakamura/neodark.vim', },
-  { "sainnhe/sonokai", },
   { "Mofiqul/dracula.nvim" },
   { "ellisonleao/gruvbox.nvim" },
   { "sickill/vim-monokai" },
@@ -652,6 +639,14 @@ lvim.plugins = {
     end,
   },
   {
+    "sustech-data/wildfire.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("wildfire").setup()
+    end,
+  },
+  {
     "lukas-reineke/indent-blankline.nvim",
     cmd = "IndentBlanklineToggle",
     config = function()
@@ -697,6 +692,11 @@ lvim.plugins = {
           progress = {
             enabled = false,
           },
+          override = {
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true,
+          },
         },
         views = {
           mini = {
@@ -728,7 +728,11 @@ lvim.plugins = {
           notify = {
             timeout = 1800,
           },
-        }
+        },
+        presets = {
+          bottom_search = true,         -- use a classic bottom cmdline for search
+          long_message_to_split = true, -- long messages will be sent to a split
+        },
       })
       require("notify").setup({
         background_colour = "#181B24",
