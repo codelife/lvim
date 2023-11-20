@@ -11,7 +11,7 @@ an executable
 -- general
 Path = require('plenary.path')
 lvim.log.level = "warn"
-lvim.colorscheme = "vim-monokai-tasty"
+lvim.colorscheme = "dracula"
 lvim.builtin.lualine.options.theme = "palenight"
 lvim.builtin.lualine.style = "lvim"
 local components = require "lvim.core.lualine.components"
@@ -27,12 +27,12 @@ vim.diagnostic.config({
   -- virtual_lines = { only_current_line = true },
 })
 lvim.builtin.nvimtree.setup.view.width = 35
-lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
-lvim.builtin.telescope.defaults.layout_config.width = 0.85
+lvim.builtin.telescope.defaults.layout_config.width = 0.5
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
 lvim.builtin.bufferline.options.sort_by = "directory"
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = true
+lvim.lsp.buffer_options.formatexpr = "v:lua.vim.lsp.formatexpr(#{timeout_ms:2000})"
 
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
@@ -49,7 +49,7 @@ lvim.leader = "space"
 lvim.builtin.treesitter.rainbow = {
   enable = true,
   extended_mode = true,  -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-  max_file_lines = 3000, -- Do not enable for files with more than n lines, int
+  max_file_lines = 5000, -- Do not enable for files with more than n lines, int
 }
 
 
@@ -134,9 +134,6 @@ vim.api.nvim_set_keymap('v', 'w',
 vim.api.nvim_set_keymap('v', 'b',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap("n", "s", ":HopChar2<cr>", { silent = true })
-vim.api.nvim_set_keymap('v', 'r', '<Plug>SnipRun', { silent = true })
-vim.api.nvim_set_keymap('n', '<leader>co', '<Plug>SnipRunOperator', { silent = true })
-vim.api.nvim_set_keymap('n', '<leader>cr', '<Plug>SnipRun', { silent = true })
 
 lvim.builtin.which_key.mappings["0"] = { "<cmd>BufferLineTogglePin <CR>", "Buffer pin" }
 lvim.builtin.which_key.mappings["1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "goto buffer1" }
@@ -148,7 +145,8 @@ lvim.builtin.which_key.mappings["6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "got
 lvim.builtin.which_key.mappings["7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "goto buffer4" }
-lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent files" }
+-- lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent files" }
+lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope mru<CR>", "recent files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
@@ -256,6 +254,7 @@ formatters.setup {
   { command = "gofumpt",   filetypes = { "go" } },
   { command = "golines",   filetypes = { "go" },     extra_args = { "-m 120" } },
   { command = "goimports", filetypes = { "go" } },
+  { command = "sqlfmt",    filetypes = { "sql" } },
 }
 
 -- -- set additional linters
@@ -527,7 +526,6 @@ lvim.plugins = {
       require("user.todo-comment")
     end,
   },
-  { 'michaelb/sniprun',             build = 'bash ./install.sh' },
   {
     'liuchengxu/vista.vim',
     cmd = 'Vista',
@@ -550,28 +548,33 @@ lvim.plugins = {
           autosave_ignore_filetypes = {                                              -- All buffers of these file types will be closed before the session is saved.
             'gitcommit',
           },
+          autosave_ignore_buftypes = { "nofile", "quikfix", "terminal" },
           autosave_only_in_session = true, -- Always autosaves session. If true, only autosaves after a session is active.
           max_path_length = 80,            -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
         }
       )
     end
   },
-  { "tami5/sqlite.lua", lazy = true },
+  { "tami5/sqlite.lua",             lazy = true },
   {
     'nvim-telescope/telescope-ui-select.nvim',
     config = function()
       require("telescope").load_extension("ui-select")
       require("telescope").load_extension("neoclip")
-      require("telescope").load_extension("frecency")
+      -- require("telescope").load_extension("frecency")
+      require("telescope").load_extension("mru")
       require('telescope').load_extension("macroscope")
       require("telescope").load_extension("yaml_schema")
       -- require("telescope").load_extension("dap")
     end
   },
-  { 'mbbill/undotree',  cmd = 'UndotreeToggle', lazy = true },
+  { 'mbbill/undotree',    cmd = 'UndotreeToggle', lazy = true },
+  -- {
+  --   "nvim-telescope/telescope-frecency.nvim",
+  -- },
   {
-    "nvim-telescope/telescope-frecency.nvim",
-    dependencies = "tami5/sqlite.lua",
+    'yegappan/mru',
+    'alan-w-255/telescope-mru.nvim',
   },
   { "windwp/nvim-spectre" },
   {
@@ -585,6 +588,7 @@ lvim.plugins = {
       })
     end
   },
+  -- colorscheme
   { "hzchirs/vim-material", },
   { 'patstockwell/vim-monokai-tasty', },
   { "Mofiqul/dracula.nvim" },
