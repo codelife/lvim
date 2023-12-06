@@ -7,5 +7,7 @@
   ],
   "reportMissingTypeStubs": false,
   "reportOptionalMemberAccess": "none",
-  "reportGeneralTypeIssues": "none"
+  "reportGeneralTypeIssues": "none",
+  "reportFunctionMemberAccess": "none",
+  "reportIncompatibleVariableOverride": "none",
 }

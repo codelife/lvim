@@ -24,20 +24,22 @@ lvim.transparent_window = true
 lvim.format_on_save = true
 vim.diagnostic.config({
   virtual_text = false,
-  -- virtual_lines = { only_current_line = true },
+  virtual_lines = { only_current_line = true },
 })
 lvim.builtin.nvimtree.setup.view.width = 35
-lvim.builtin.telescope.defaults.layout_config.width = 0.5
+lvim.builtin.telescope.defaults.layout_config.width = 0.6
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
 lvim.builtin.bufferline.options.sort_by = "directory"
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = true
+lvim.builtin.bufferline.options.show_tab_indicators = false
+lvim.builtin.bufferline.options.tab_size = 0
 lvim.lsp.buffer_options.formatexpr = "v:lua.vim.lsp.formatexpr(#{timeout_ms:2000})"
 
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldenable = true   -- no fold to be applied when open a file
+vim.opt.foldenable = false  -- no fold to be applied when open a file
 vim.opt.foldlevel = 99
 vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
@@ -145,8 +147,7 @@ lvim.builtin.which_key.mappings["6"] = { "<cmd>BufferLineGoToBuffer 6<CR>", "got
 lvim.builtin.which_key.mappings["7"] = { "<cmd>BufferLineGoToBuffer 7<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["8"] = { "<cmd>BufferLineGoToBuffer 8<CR>", "goto buffer4" }
 lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "goto buffer4" }
--- lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent files" }
-lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope mru<CR>", "recent files" }
+lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
@@ -493,7 +494,7 @@ lvim.plugins = {
     config = function()
       require("mason").setup()
       require("mason-lspconfig").setup {
-        ensure_installed = { "gopls", "pyright", "taplo", "html", "lua_ls", "yamlls", "volar", "jsonls", "sql_formatter",
+        ensure_installed = { "gopls", "pyright", "ruff_lsp", "taplo", "html", "lua_ls", "yamlls", "volar", "jsonls", "sql_formatter",
           "golines", "gofumpt", "goimports", "golangci_lint_ls", "isort" },
         automatic_installation = true,
       }
@@ -561,20 +562,15 @@ lvim.plugins = {
     config = function()
       require("telescope").load_extension("ui-select")
       require("telescope").load_extension("neoclip")
-      -- require("telescope").load_extension("frecency")
-      require("telescope").load_extension("mru")
+      require("telescope").load_extension("frecency")
       require('telescope').load_extension("macroscope")
       require("telescope").load_extension("yaml_schema")
       -- require("telescope").load_extension("dap")
     end
   },
   { 'mbbill/undotree',    cmd = 'UndotreeToggle', lazy = true },
-  -- {
-  --   "nvim-telescope/telescope-frecency.nvim",
-  -- },
   {
-    'yegappan/mru',
-    'alan-w-255/telescope-mru.nvim',
+    "nvim-telescope/telescope-frecency.nvim",
   },
   { "windwp/nvim-spectre" },
   {
@@ -589,6 +585,7 @@ lvim.plugins = {
     end
   },
   -- colorscheme
+  { "Shatur/neovim-ayu" },
   { "hzchirs/vim-material", },
   { 'patstockwell/vim-monokai-tasty', },
   { "Mofiqul/dracula.nvim" },
