@@ -23,13 +23,13 @@ lvim.builtin.lualine.sections.lualine_c = {
 lvim.transparent_window = true
 lvim.format_on_save = true
 vim.diagnostic.config({
-  virtual_text = false,
+  virtual_text = true,
   virtual_lines = { only_current_line = true },
 })
 lvim.builtin.nvimtree.setup.view.width = 35
 lvim.builtin.telescope.defaults.layout_config.width = 0.6
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
-lvim.builtin.bufferline.options.sort_by = "directory"
+lvim.builtin.bufferline.options.sort_by = "relative_directory"
 lvim.builtin.bufferline.options.numbers = "ordinal"
 lvim.builtin.bufferline.options.diagnostics = true
 lvim.builtin.bufferline.options.show_tab_indicators = false
@@ -46,6 +46,47 @@ vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
 
+-- LunarVim use pyright as default lsp for python, disable default settings;
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
+local pyright_opts = {
+  handlers = {
+    ["textDocument/publishDiagnostics"] = function() end,
+  },
+  on_attach = function(client, _)
+    client.server_capabilities.codeActionProvider = false
+  end,
+  single_file_support = true,
+  settings = {
+    pyright = {
+      disableLanguageServices = false,
+      disableOrganizeImports = true
+    },
+    python = {
+      analysis = {
+        autoImportCompletions = true,
+        autoSearchPaths = true,
+        diagnosticMode = "openFilesOnly", -- openFilesOnly, workspace
+        typeCheckingMode = "standard",    -- off, basic, strict
+        useLibraryCodeForTypes = true
+      }
+    }
+  },
+}
+require("lvim.lsp.manager").setup("pyright", pyright_opts)
+
+require('lspconfig').ruff_lsp.setup {
+  on_attach = function(client, _)
+    client.server_capabilities.hoverProvider = false
+  end,
+  init_options = {
+    settings = {
+      -- default settings config is in ~/.config/ruff/pyproject.toml for linux
+      -- default settings config is in ~/Library/Application Support/ruff/pyproject.toml for mac
+      -- also you can add config in your project root path
+      args = {},
+    }
+  }
+}
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 lvim.builtin.treesitter.rainbow = {
@@ -107,11 +148,8 @@ vim.api.nvim_set_keymap('n', '<c-p>', "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap('n', '<c-n>', "<cmd>BufferLineCycleNext<cr>", {})
 vim.api.nvim_set_keymap('n', '<space>,', "%", {})
 vim.api.nvim_set_keymap('n', '<space>y', "y$", {})
-vim.api.nvim_set_keymap('n', '<space>de', "D", {})
-vim.api.nvim_set_keymap('n', '<space>ce', "C", {})
 vim.api.nvim_set_keymap('n', ';w', "<cmd>w<cr>", {})
 vim.api.nvim_set_keymap('n', ';q', "<cmd>BufferKill<cr>", {})
-vim.api.nvim_set_keymap('n', ';h', "<cmd>nohlsearch<cr>", {})
 vim.api.nvim_set_keymap('n', '<M-k>', "", {})
 vim.api.nvim_set_keymap('n', '<M-j>', "", {})
 vim.api.nvim_set_keymap('v', '<M-k>', "", {})
@@ -126,7 +164,6 @@ vim.api.nvim_set_keymap('', 'F',
   "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>"
   , {})
 vim.api.nvim_set_keymap('n', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
-vim.api.nvim_set_keymap('v', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap('n', 'w',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap('n', 'b',
@@ -135,7 +172,6 @@ vim.api.nvim_set_keymap('v', 'w',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap('v', 'b',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
-vim.api.nvim_set_keymap("n", "s", ":HopChar2<cr>", { silent = true })
 
 lvim.builtin.which_key.mappings["0"] = { "<cmd>BufferLineTogglePin <CR>", "Buffer pin" }
 lvim.builtin.which_key.mappings["1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "goto buffer1" }
@@ -187,6 +223,7 @@ lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown Gen
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text format" }
 
 lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff current file" }
+lvim.builtin.which_key.mappings["ge"] = { "<c-w>h:q<cr>", "close left diff file" }
 lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
 lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
 lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
@@ -251,22 +288,13 @@ lvim.builtin.treesitter.ensure_installed = {
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "black",     filetypes = { "python" }, extra_args = { "-l 120" } },
+  -- { command = "black",     filetypes = { "python" }, extra_args = { "-l 120" } },
   { command = "gofumpt",   filetypes = { "go" } },
-  { command = "golines",   filetypes = { "go" },     extra_args = { "-m 120" } },
+  { command = "golines",   filetypes = { "go" }, extra_args = { "-m 120" } },
   { command = "goimports", filetypes = { "go" } },
   { command = "sqlfmt",    filetypes = { "sql" } },
 }
 
--- -- set additional linters
-local linters = require "lvim.lsp.null-ls.linters"
-linters.setup {
-  {
-    command = "flake8",
-    filetypes = { "python" },
-    extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503,E203,F841", "--max-complexity=15" },
-  },
-}
 -- Additional Plugins
 lvim.plugins = {
   {
@@ -483,19 +511,12 @@ lvim.plugins = {
     end
   },
   {
-    url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-    config = function()
-      require("lsp_lines").setup()
-      -- require("lsp_lines").setup({ virtual_lines = true })
-    end,
-  },
-  {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
       require("mason-lspconfig").setup {
-        ensure_installed = { "gopls", "pyright", "ruff_lsp", "taplo", "html", "lua_ls", "yamlls", "volar", "jsonls", "sql_formatter",
-          "golines", "gofumpt", "goimports", "golangci_lint_ls", "isort" },
+        ensure_installed = { "gopls", "pyright", "ruff_lsp", "taplo", "lua_ls", "yamlls", "volar", "jsonls", "sql_formatter",
+          "golines", "gofumpt", "goimports", "golangci_lint_ls", "isort", "vimls" },
         automatic_installation = true,
       }
     end
