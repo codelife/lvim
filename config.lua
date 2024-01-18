@@ -11,56 +11,101 @@ an executable
 -- general
 Path = require('plenary.path')
 lvim.log.level = "warn"
-lvim.colorscheme = "vim-monokai-tasty"
+lvim.colorscheme = "dracula"
 lvim.builtin.lualine.options.theme = "palenight"
 lvim.builtin.lualine.style = "lvim"
+local components = require "lvim.core.lualine.components"
+lvim.builtin.lualine.sections.lualine_c = {
+  components.diff,
+  components.python_env,
+  { "filename", path = 2 },
+}
 lvim.transparent_window = true
 lvim.format_on_save = true
-lvim.lsp.automatic_servers_installation = true
-lvim.lsp.installer.setup.automatic_installation = true
 vim.diagnostic.config({
-  virtual_text = false,
+  virtual_text = true,
+  virtual_lines = { only_current_line = true },
 })
 lvim.builtin.nvimtree.setup.view.width = 35
-lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
-lvim.builtin.telescope.defaults.layout_config.width = 0.85
+lvim.builtin.telescope.defaults.layout_config.width = 0.6
 lvim.builtin.bufferline.options.show_buffer_close_icons = false
-lvim.builtin.bufferline.options.sort_by = "directory"
+lvim.builtin.bufferline.options.sort_by = "relative_directory"
+lvim.builtin.bufferline.options.numbers = "ordinal"
+lvim.builtin.bufferline.options.diagnostics = true
+lvim.builtin.bufferline.options.show_tab_indicators = false
+lvim.builtin.bufferline.options.tab_size = 0
+lvim.lsp.buffer_options.formatexpr = "v:lua.vim.lsp.formatexpr(#{timeout_ms:2000})"
+
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldenable = true   -- no fold to be applied when open a file
+vim.opt.foldenable = false  -- no fold to be applied when open a file
 vim.opt.foldlevel = 99
 vim.opt.updatetime = 300
 vim.opt.timeoutlen = 300
 vim.opt.ttimeoutlen = 100
 vim.opt.termguicolors = true
 
+-- LunarVim use pyright as default lsp for python, disable default settings;
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
+local pyright_opts = {
+  handlers = {
+    ["textDocument/publishDiagnostics"] = function() end,
+  },
+  on_attach = function(client, _)
+    client.server_capabilities.codeActionProvider = false
+  end,
+  single_file_support = true,
+  settings = {
+    pyright = {
+      disableLanguageServices = false,
+      disableOrganizeImports = true
+    },
+    python = {
+      analysis = {
+        autoImportCompletions = true,
+        autoSearchPaths = true,
+        diagnosticMode = "openFilesOnly", -- openFilesOnly, workspace
+        typeCheckingMode = "standard",    -- off, basic, strict
+        useLibraryCodeForTypes = true
+      }
+    }
+  },
+}
+require("lvim.lsp.manager").setup("pyright", pyright_opts)
+
+require('lspconfig').ruff_lsp.setup {
+  on_attach = function(client, _)
+    client.server_capabilities.hoverProvider = false
+  end,
+  init_options = {
+    settings = {
+      -- default settings config is in ~/.config/ruff/pyproject.toml for linux
+      -- default settings config is in ~/Library/Application Support/ruff/pyproject.toml for mac
+      -- also you can add config in your project root path
+      args = {},
+    }
+  }
+}
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
---[[ lvim.builtin.treesitter.matchup['enable'] = true ]]
-lvim.builtin.comment.pre_hook = function(ctx)
-  local U = require 'Comment.utils'
-
-  local location = nil
-  if ctx.ctype == U.ctype.block then
-    location = require('ts_context_commentstring.utils').get_cursor_location()
-  elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
-    location = require('ts_context_commentstring.utils').get_visual_start_location()
-  end
-
-  return require('ts_context_commentstring.internal').calculate_commentstring {
-    key = ctx.ctype == U.ctype.line and '__default' or '__multiline',
-    location = location,
-  }
-end
-
 lvim.builtin.treesitter.rainbow = {
   enable = true,
   extended_mode = true,  -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-  max_file_lines = 3000, -- Do not enable for files with more than n lines, int
+  max_file_lines = 5000, -- Do not enable for files with more than n lines, int
 }
 
+
+lvim.autocommands = {
+  {
+    "FileType", -- see `:h autocmd-events`
+    {
+      group = "fugitive_setting",
+      pattern = { "fugitive" }, -- see `:h autocmd-events`
+      command = "map <buffer> gpp :Git push<CR>",
+    }
+  },
+}
 
 lvim.builtin.treesitter.textobjects.select = {
   enable = true,
@@ -68,13 +113,13 @@ lvim.builtin.treesitter.textobjects.select = {
   lookahead = true,
   keymaps = {
     -- You can use the capture groups defined in textobjects.scm
-        ["af"] = "@conditional.outer",
-        ["if"] = "@conditional.inner",
-        ["ic"] = "@comment.outer",
-        ["il"] = "@loop.inner",
-        ["al"] = "@loop.outer",
-        ["ak"] = "@block.outer",
-        ["ik"] = "@block.inner",
+    ["af"] = "@conditional.outer",
+    ["if"] = "@conditional.inner",
+    ["ic"] = "@comment.outer",
+    ["il"] = "@loop.inner",
+    ["al"] = "@loop.outer",
+    ["ak"] = "@block.outer",
+    ["ik"] = "@block.inner",
   }
 }
 
@@ -103,11 +148,8 @@ vim.api.nvim_set_keymap('n', '<c-p>', "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap('n', '<c-n>', "<cmd>BufferLineCycleNext<cr>", {})
 vim.api.nvim_set_keymap('n', '<space>,', "%", {})
 vim.api.nvim_set_keymap('n', '<space>y', "y$", {})
-vim.api.nvim_set_keymap('n', '<space>de', "D", {})
-vim.api.nvim_set_keymap('n', '<space>ce', "C", {})
 vim.api.nvim_set_keymap('n', ';w', "<cmd>w<cr>", {})
 vim.api.nvim_set_keymap('n', ';q', "<cmd>BufferKill<cr>", {})
-vim.api.nvim_set_keymap('n', ';h', "<cmd>nohlsearch<cr>", {})
 vim.api.nvim_set_keymap('n', '<M-k>', "", {})
 vim.api.nvim_set_keymap('n', '<M-j>', "", {})
 vim.api.nvim_set_keymap('v', '<M-k>', "", {})
@@ -122,7 +164,6 @@ vim.api.nvim_set_keymap('', 'F',
   "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>"
   , {})
 vim.api.nvim_set_keymap('n', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
-vim.api.nvim_set_keymap('v', ';;', "<cmd>lua require'hop'.hint_words({ current_line_only = true })<cr>", {})
 vim.api.nvim_set_keymap('n', 'w',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap('n', 'b',
@@ -131,10 +172,6 @@ vim.api.nvim_set_keymap('v', 'w',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR})<cr>", {})
 vim.api.nvim_set_keymap('v', 'b',
   "<cmd>lua require'hop'.hint_words({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR})<cr>", {})
-vim.api.nvim_set_keymap("n", "s", ":HopChar2<cr>", { silent = true })
-vim.api.nvim_set_keymap('v', 'r', '<Plug>SnipRun', { silent = true })
-vim.api.nvim_set_keymap('n', '<leader>co', '<Plug>SnipRunOperator', { silent = true })
-vim.api.nvim_set_keymap('n', '<leader>cr', '<Plug>SnipRun', { silent = true })
 
 lvim.builtin.which_key.mappings["0"] = { "<cmd>BufferLineTogglePin <CR>", "Buffer pin" }
 lvim.builtin.which_key.mappings["1"] = { "<cmd>BufferLineGoToBuffer 1<CR>", "goto buffer1" }
@@ -150,24 +187,21 @@ lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent 
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", 'quit' }
 lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", 'search' }
-lvim.builtin.which_key.mappings["ws"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>",
+lvim.builtin.which_key.mappings["sw"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>",
   'search current word' }
 lvim.builtin.which_key.mappings["sg"] = { "<cmd>lua require('spectre').open_file_search()<CR>", 'search in current file' }
-lvim.builtin.which_key.mappings["dd"] = { "<Cmd>BufferKill<CR>", 'Buffer kill' }
 lvim.builtin.which_key.mappings["dg"] = { "<Cmd>DogeGenerate<CR>", 'gen doc' }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>Telescope buffers<cr>", "List buffers" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
-lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByExtension<cr>", "Sort buffer ext" }
-lvim.builtin.which_key.mappings["pp"] = { "<cmd>Telescope projects<cr>", "Projects" }
-lvim.builtin.which_key.mappings["ss"] = { "<cmd>SessionManager save_current_session<cr>", "Save current session" }
+lvim.builtin.which_key.mappings["bs"] = { "<cmd>BufferLineSortByDirectory<cr>", "Sort buffer directory" }
+lvim.builtin.which_key.mappings["pj"] = { "<cmd>Telescope projects<cr>", "Projects" }
 lvim.builtin.which_key.mappings["sa"] = { "<cmd>SessionManager load_session<cr>", "Show all session" }
-lvim.builtin.which_key.mappings["sl"] = { "<cmd>SessionManager load_last_session<cr>", "Load last session" }
 lvim.builtin.which_key.mappings["sc"] = { "<cmd>SessionManager load_current_dir_session<cr>",
   "Restore last session for CurrentDir" }
 lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", 'ranger' }
 lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope git_files<cr>", "Find file" }
 lvim.builtin.which_key.mappings["fh"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
-lvim.builtin.which_key.mappings["fg"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
+lvim.builtin.which_key.mappings["gf"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
 lvim.builtin.which_key.mappings["fw"] = { "<cmd>Telescope grep_string<cr>", "Searches word under cursor" }
 lvim.builtin.which_key.mappings["fs"] = { "<cmd>Telescope yaml_schema<cr>", "select yaml_schema" }
 lvim.builtin.which_key.mappings["lc"] = { "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
@@ -177,10 +211,7 @@ lvim.builtin.which_key.mappings["lf"] = { "<cmd>Telescope search_history<cr>", "
 lvim.builtin.which_key.mappings["ls"] = { "<cmd>Telescope lsp_document_symbols<cr>", "Document symbol" }
 lvim.builtin.which_key.mappings["lr"] = { "<cmd>lua require'telescope.builtin'.registers{}<cr>, ", "registers" }
 lvim.builtin.which_key.mappings["lm"] = { "<cmd>Telescope macroscope<cr>", "macros" }
-lvim.builtin.which_key.mappings["lh"] = { "<cmd>HopLine<cr>", "hop line" }
 lvim.builtin.which_key.mappings["ll"] = { "<cmd>NvimTreeFindFile<cr>", "locate file" }
-lvim.builtin.which_key.mappings["lj"] = { "<cmd>lua require'telescope.builtin'.jumplist{}<cr>", "jumplist" }
-lvim.builtin.which_key.mappings["lk"] = { "<cmd>lua require'telescope.builtin'.keymaps{}<cr>", "keymaps" }
 lvim.builtin.which_key.mappings["i"] = { "<cmd>IndentBlanklineToggle<cr>", "blankline toggle" }
 lvim.builtin.which_key.mappings["td"] = { "<cmd>TodoTelescope<cr>", "List Todo" }
 lvim.builtin.which_key.mappings["tt"] = { "<cmd>Vista!!<cr>", "Code Navigate" }
@@ -192,6 +223,7 @@ lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown Gen
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text format" }
 
 lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff current file" }
+lvim.builtin.which_key.mappings["ge"] = { "<c-w>h:q<cr>", "close left diff file" }
 lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
 lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
 lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
@@ -217,9 +249,6 @@ lvim.builtin.which_key.mappings['hb'] = { '<cmd>lua require"gitsigns".blame_line
 lvim.builtin.which_key.mappings['tb'] = { '<cmd>TroubleToggle<CR>', "Troubleshoot" }
 lvim.builtin.which_key.mappings['hd'] = { '<cmd>Gitsigns diffthis<CR>', "diff this" }
 lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
-
-lvim.builtin.bufferline.options.numbers = "ordinal"
-lvim.builtin.bufferline.options.diagnostics = false
 
 lvim.builtin.which_key.mappings["c"] = { "" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
@@ -256,68 +285,16 @@ lvim.builtin.treesitter.ensure_installed = {
   "markdown",
   "graphql",
 }
-
-lvim.builtin.indentlines.options.enabled = false
-lvim.builtin.indentlines.options.show_current_context = true
-lvim.builtin.indentlines.options.show_first_indent_level = false
-lvim.builtin.indentlines.options.use_treesitter = true
-vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
-vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
-vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
-
-require("indent_blankline").setup {
-  show_current_context = true,
-  show_current_context_start = true,
-  space_char_blankline = " ",
-  char_highlight_list = {
-    "IndentBlanklineIndent1",
-    "IndentBlanklineIndent2",
-    "IndentBlanklineIndent3",
-    "IndentBlanklineIndent4",
-    "IndentBlanklineIndent5",
-  }
-}
-
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  { command = "black",         filetypes = { "python" }, extra_args = { "-l 120" } },
-  { command = "isort",         filetypes = { "python" } },
-  { command = "gofumpt",       filetypes = { "go" } },
-  { command = "goimports",     filetypes = { "go" } },
-  { command = "golines",       filetypes = { "go" },     extra_args = { "-m 120" } },
-  { command = "sql_formatter", filetypes = { "sql" } },
-  { command = "buf",           filetypes = { "proto" } },
-  {
-    command = "prettier",
-    extra_args = { "--print-with", "120" },
-    filetypes = { "json", "html", "yaml" },
-  },
-  {
-    command = "eslint_d",
-    extra_args = { "-f", "json", "--stdin", "--stdin-filename", "$FILENAME" },
-    filetypes = { "javascript", "javascriptreact", "vue", "typescriptreact", "typescript" },
-  }
+  -- { command = "black",     filetypes = { "python" }, extra_args = { "-l 120" } },
+  { command = "gofumpt",   filetypes = { "go" } },
+  { command = "golines",   filetypes = { "go" }, extra_args = { "-m 120" } },
+  { command = "goimports", filetypes = { "go" } },
+  { command = "sqlfmt",    filetypes = { "sql" } },
 }
 
--- -- set additional linters
-local linters = require "lvim.lsp.null-ls.linters"
-linters.setup {
-  {
-    command = "flake8",
-    filetypes = { "python" },
-    extra_args = { "--max-line-length=120", "--ignore=F401,E121,E501,F403,W503", "--max-complexity=15" },
-  },
-  { command = "buf", filetypes = { "proto" } },
-  --[[ { command = "golangci-lint", filetypes = { "go" } }, ]]
-  --[[ { ]]
-  --[[   command = "eslint_d", ]]
-  --[[   filetypes = { "javascript", "typescript", "vue", "typescriptreact" }, ]]
-  --[[ }, ]]
-}
 -- Additional Plugins
 lvim.plugins = {
   {
@@ -376,16 +353,22 @@ lvim.plugins = {
   },
   {
     "zbirenbaum/copilot-cmp",
-    after = { "copilot.lua", "nvim-cmp" },
+    event = "InsertEnter",
+    dependencies = { "zbirenbaum/copilot.lua", "hrsh7th/nvim-cmp" },
     config = function()
       require("copilot_cmp").setup()
     end
   },
   {
-    "p00f/nvim-ts-rainbow",
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {},
   },
   {
-    'sQVe/sort.nvim',
+    "p00f/nvim-ts-rainbow", event = "BufRead",
+  },
+  {
+    'sQVe/sort.nvim', event = "BufRead"
   },
   {
     "nacro90/numb.nvim",
@@ -395,10 +378,12 @@ lvim.plugins = {
   },
   {
     "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     cmd = "TroubleToggle",
+    opts = {},
   },
-  { 'tpope/vim-surround' },
-  { 'tpope/vim-repeat' },
+  { 'tpope/vim-surround', event = "BufRead" },
+  { 'tpope/vim-repeat',   event = "BufRead" },
   {
     -- easymotion
     "phaazon/hop.nvim",
@@ -418,13 +403,6 @@ lvim.plugins = {
     end,
   },
   {
-    "andymass/vim-matchup",
-    event = "CursorMoved",
-    config = function()
-      vim.g.matchup_matchparen_offscreen = { method = "popup" }
-    end,
-  },
-  {
     "tpope/vim-fugitive",
   },
   { 'sindrets/diffview.nvim' },
@@ -437,6 +415,7 @@ lvim.plugins = {
   },
   {
     "norcalli/nvim-colorizer.lua",
+    event = "BufRead",
     config = function()
       require 'colorizer'.setup {
         'css',
@@ -451,9 +430,10 @@ lvim.plugins = {
       }
     end
   },
-  { "kkoomen/vim-doge",      run = ':call doge#install()' },
+  { "kkoomen/vim-doge",      build = ':call doge#install()' },
   {
     "rmagatti/goto-preview",
+    lazy = true,
     config = function()
       require('goto-preview').setup {
         width = 121,             -- Width of the floating window
@@ -496,7 +476,6 @@ lvim.plugins = {
   {
     "monaqa/dial.nvim",
     event = "BufRead",
-    lock = true,
     config = function()
       vim.api.nvim_set_keymap("n", "<C-a>", require("dial.map").inc_normal(), { noremap = true })
       vim.api.nvim_set_keymap("n", "<C-x>", require("dial.map").dec_normal(), { noremap = true })
@@ -532,25 +511,30 @@ lvim.plugins = {
     end
   },
   {
-    "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    "williamboman/mason.nvim",
     config = function()
-      require("lsp_lines").setup({ virtual_lines = true })
-    end,
+      require("mason").setup()
+      require("mason-lspconfig").setup {
+        ensure_installed = { "gopls", "pyright", "ruff_lsp", "taplo", "lua_ls", "yamlls", "volar", "jsonls", "sql_formatter",
+          "golines", "gofumpt", "goimports", "golangci_lint_ls", "isort", "vimls" },
+        automatic_installation = true,
+      }
+    end
   },
   {
     "tzachar/cmp-tabnine",
-    run = "./install.sh",
-    requires = "hrsh7th/nvim-cmp",
+    build = "./install.sh",
+    dependencies = "hrsh7th/nvim-cmp",
     event = "InsertEnter",
   },
   { 'nvim-treesitter/nvim-treesitter-textobjects', },
-  { 'iamcco/markdown-preview.nvim',                run = 'cd app && yarn install',        ft = "markdown" },
+  { 'iamcco/markdown-preview.nvim',                build = 'cd app && yarn install',      ft = "markdown" },
   { 'mzlogin/vim-markdown-toc',                    ft = 'markdown', },
   { 'tpope/vim-markdown',                          ft = 'markdown' },
   { 'hotoo/pangu.vim',                             ft = { 'markdown', 'vimwiki', 'text' } },
   { "dhruvasagar/vim-table-mode",                  cmd = "TableModeToggle" },
   --[[ { "mg979/vim-visual-multi" }, ]]
-  { 'mtdl9/vim-log-highlighting', },
+  { 'mtdl9/vim-log-highlighting',                  ft = "log" },
   {
     'kevinhwang91/nvim-hlslens',
     config = function()
@@ -564,7 +548,6 @@ lvim.plugins = {
       require("user.todo-comment")
     end,
   },
-  { 'michaelb/sniprun',             run = 'bash ./install.sh' },
   {
     'liuchengxu/vista.vim',
     cmd = 'Vista',
@@ -587,13 +570,14 @@ lvim.plugins = {
           autosave_ignore_filetypes = {                                              -- All buffers of these file types will be closed before the session is saved.
             'gitcommit',
           },
+          autosave_ignore_buftypes = { "nofile", "quikfix", "terminal" },
           autosave_only_in_session = true, -- Always autosaves session. If true, only autosaves after a session is active.
           max_path_length = 80,            -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
         }
       )
     end
   },
-  { "tami5/sqlite.lua" },
+  { "tami5/sqlite.lua",             lazy = true },
   {
     'nvim-telescope/telescope-ui-select.nvim',
     config = function()
@@ -605,10 +589,9 @@ lvim.plugins = {
       -- require("telescope").load_extension("dap")
     end
   },
-  { 'mbbill/undotree', cmd = 'UndotreeToggle' },
+  { 'mbbill/undotree',    cmd = 'UndotreeToggle', lazy = true },
   {
     "nvim-telescope/telescope-frecency.nvim",
-    requires = { "tami5/sqlite.lua" },
   },
   { "windwp/nvim-spectre" },
   {
@@ -622,20 +605,17 @@ lvim.plugins = {
       })
     end
   },
+  -- colorscheme
+  { "Shatur/neovim-ayu" },
   { "hzchirs/vim-material", },
-  { 'projekt0n/github-nvim-theme', },
-  { "EdenEast/nightfox.nvim" },
-  { 'phanviet/vim-monokai-pro', },
-  { 'mhartington/oceanic-next', },
   { 'patstockwell/vim-monokai-tasty', },
-  { 'KeitaNakamura/neodark.vim', },
-  { "sainnhe/sonokai", },
   { "Mofiqul/dracula.nvim" },
   { "ellisonleao/gruvbox.nvim" },
   { "sickill/vim-monokai" },
   {
     "someone-stole-my-name/yaml-companion.nvim",
-    requires = {
+    ft = "yaml",
+    dependencies = {
       { "neovim/nvim-lspconfig" },
       { "nvim-lua/plenary.nvim" },
       { "nvim-telescope/telescope.nvim" },
@@ -649,7 +629,7 @@ lvim.plugins = {
   },
   {
     "AckslD/nvim-neoclip.lua",
-    as = 'neoclip',
+    name = 'neoclip',
     config = function()
       require('neoclip').setup(
         {
@@ -671,39 +651,74 @@ lvim.plugins = {
     end,
   },
   {
-    'stevearc/oil.nvim',
-    config = function() require('oil').setup() end
-  },
-  {
     'gelguy/wilder.nvim',
     config = function()
       local wilder = require('wilder')
       wilder.setup({ modes = { '/', '?' } })
       wilder.set_option('renderer', wilder.popupmenu_renderer({
         highlighter = wilder.basic_highlighter(),
-        left = { ' ', wilder.popupmenu_devicons() },
-        right = { ' ', wilder.popupmenu_scrollbar() },
       }))
     end,
   },
   {
+    "sustech-data/wildfire.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("wildfire").setup()
+    end,
+  },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    cmd = "IndentBlanklineToggle",
+    config = function()
+      vim.g.indent_blankline_char_list = { '|', '¦', '¦' }
+      vim.cmd([[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent2 guifg=#C678DD gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]])
+      vim.cmd([[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]])
+      require("indent_blankline").setup {
+        enabled = false,
+        show_first_indent_level = false,
+        show_current_context = false,
+        use_treesitter = true,
+        show_current_context_start = true,
+        space_char_blankline = " ",
+        char_highlight_list = {
+          "IndentBlanklineIndent1",
+          "IndentBlanklineIndent2",
+          "IndentBlanklineIndent3",
+          "IndentBlanklineIndent4",
+          "IndentBlanklineIndent5",
+        }
+      }
+    end
+  },
+  {
     "folke/noice.nvim",
+    event = "VeryLazy",
     config = function()
       require("noice").setup({
         messages = {
           -- NOTE: If you enable messages, then the cmdline is enabled automatically.
           -- This is a current Neovim limitation.
           enabled = true,            -- enables the Noice messages UI
-          view = "mini",             -- default view for messages
+          view = "notify",           -- default view for messages
           view_error = "notify",     -- view for errors
-          view_warn = false,         -- view for warnings
+          view_warn = "notify",      -- view for warnings
           view_history = "messages", -- view for :messages
           view_search = false,       -- view for search count messages. Set to `false` to disable
         },                           -- add any options here
         lsp = {
           progress = {
             enabled = false,
-          }
+          },
+          override = {
+            ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+            ["vim.lsp.util.stylize_markdown"] = true,
+            ["cmp.entry.get_documentation"] = true,
+          },
         },
         views = {
           mini = {
@@ -735,18 +750,18 @@ lvim.plugins = {
           notify = {
             timeout = 1800,
           },
-        }
+        },
+        presets = {
+          bottom_search = true,         -- use a classic bottom cmdline for search
+          long_message_to_split = true, -- long messages will be sent to a split
+        },
       })
       require("notify").setup({
         background_colour = "#181B24",
       })
     end,
-    requires = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+    dependencies = {
       "MunifTanjim/nui.nvim",
-      -- OPTIONAL:
-      --   `nvim-notify` is only needed, if you want to use the notification view.
-      --   If not available, we use `mini` as the fallback
       "rcarriga/nvim-notify",
     }
   },
