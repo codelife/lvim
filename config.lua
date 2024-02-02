@@ -75,8 +75,28 @@ local pyright_opts = {
 require("lvim.lsp.manager").setup("pyright", pyright_opts)
 
 require('lspconfig').ruff_lsp.setup {
-  on_attach = function(client, _)
-    client.server_capabilities.hoverProvider = false
+  on_attach = function(client, bufnr)
+    client.server_capabilities.hoverProvider = true
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+    -- Mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local bufopts = { noremap = true, silent = true, buffer = bufnr }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+    vim.keymap.set('n', '<space>wl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, bufopts)
+    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
   end,
   init_options = {
     settings = {
@@ -253,7 +273,7 @@ lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("
 lvim.builtin.which_key.mappings["c"] = { "" }
 lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
 lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", 'code diagnostic' }
-lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format()<cr>", 'code format' }
+lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format({async=true})<cr>", 'code format' }
 lvim.builtin.which_key.mappings["cl"] = { "<cmd>lua vim.lsp.codelens.run()<cr>" }
 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
@@ -768,3 +788,4 @@ lvim.plugins = {
 }
 lvim.builtin.cmp.formatting.source_names["copilot"] = "(Copilot)"
 table.insert(lvim.builtin.cmp.sources, 1, { name = "copilot" })
+-- :let @p='<esc>0i"<Esc>i"j'
