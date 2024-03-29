@@ -11,7 +11,7 @@ an executable
 -- general
 Path = require('plenary.path')
 lvim.log.level = "warn"
-lvim.colorscheme = "dracula"
+lvim.colorscheme = "vim-monokai-tasty"
 lvim.builtin.lualine.options.theme = "palenight"
 lvim.builtin.lualine.style = "lvim"
 local components = require "lvim.core.lualine.components"
@@ -74,6 +74,7 @@ local pyright_opts = {
 }
 require("lvim.lsp.manager").setup("pyright", pyright_opts)
 
+
 require('lspconfig').ruff_lsp.setup {
   on_attach = function(client, bufnr)
     client.server_capabilities.hoverProvider = true
@@ -107,6 +108,15 @@ require('lspconfig').ruff_lsp.setup {
     }
   }
 }
+
+require('lspconfig').gopls.setup({
+  settings = {
+    gopls = {
+      gofumpt = true
+    }
+  }
+})
+
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 lvim.builtin.treesitter.rainbow = {
@@ -266,7 +276,6 @@ lvim.builtin.which_key.mappings['hu'] = { '<cmd>Gitsigns undo_stage_hunk<CR>', "
 lvim.builtin.which_key.mappings['hR'] = { '<cmd>Gitsigns reset_buffer<CR>', "reset buffer" }
 lvim.builtin.which_key.mappings['hp'] = { '<cmd>Gitsigns preview_hunk<CR>', "preview hunk" }
 lvim.builtin.which_key.mappings['hb'] = { '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', "blame line" }
-lvim.builtin.which_key.mappings['tb'] = { '<cmd>TroubleToggle<CR>', "Troubleshoot" }
 lvim.builtin.which_key.mappings['hd'] = { '<cmd>Gitsigns diffthis<CR>', "diff this" }
 lvim.builtin.which_key.mappings['hD'] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
 
@@ -308,7 +317,6 @@ lvim.builtin.treesitter.ensure_installed = {
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
-  -- { command = "black",     filetypes = { "python" }, extra_args = { "-l 120" } },
   { command = "gofumpt",   filetypes = { "go" } },
   { command = "golines",   filetypes = { "go" }, extra_args = { "-m 120" } },
   { command = "goimports", filetypes = { "go" } },
@@ -337,14 +345,14 @@ lvim.plugins = {
           },
           layout = {
             position = "bottom",
-            ratio = 0.4
+            ratio = 0.5
           }
         },
         ---@class copilot_config_suggestion
         suggestion = {
           enabled = true,
           auto_trigger = true,
-          debounce = 100,
+          debounce = 75,
           ---@type table<'accept'|'next'|'prev'|'dismiss', false|string>
           keymap = {
             accept = "<C-l>",
@@ -395,12 +403,6 @@ lvim.plugins = {
     config = function()
       require("numb").setup()
     end
-  },
-  {
-    "folke/trouble.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    cmd = "TroubleToggle",
-    opts = {},
   },
   { 'tpope/vim-surround', event = "BufRead" },
   { 'tpope/vim-repeat',   event = "BufRead" },
@@ -541,19 +543,12 @@ lvim.plugins = {
       }
     end
   },
-  {
-    "tzachar/cmp-tabnine",
-    build = "./install.sh",
-    dependencies = "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
-  },
   { 'nvim-treesitter/nvim-treesitter-textobjects', },
   { 'iamcco/markdown-preview.nvim',                build = 'cd app && yarn install',      ft = "markdown" },
   { 'mzlogin/vim-markdown-toc',                    ft = 'markdown', },
   { 'tpope/vim-markdown',                          ft = 'markdown' },
   { 'hotoo/pangu.vim',                             ft = { 'markdown', 'vimwiki', 'text' } },
   { "dhruvasagar/vim-table-mode",                  cmd = "TableModeToggle" },
-  --[[ { "mg979/vim-visual-multi" }, ]]
   { 'mtdl9/vim-log-highlighting',                  ft = "log" },
   {
     'kevinhwang91/nvim-hlslens',
@@ -575,7 +570,6 @@ lvim.plugins = {
       vim.g.vista_default_executive = 'nvim_lsp'
     end
   },
-  { "simrat39/symbols-outline.nvim" },
   {
     "Shatur/neovim-session-manager",
     config = function()
@@ -597,7 +591,7 @@ lvim.plugins = {
       )
     end
   },
-  { "tami5/sqlite.lua",             lazy = true },
+  { "tami5/sqlite.lua", lazy = true },
   {
     'nvim-telescope/telescope-ui-select.nvim',
     config = function()
@@ -609,11 +603,11 @@ lvim.plugins = {
       -- require("telescope").load_extension("dap")
     end
   },
-  { 'mbbill/undotree',    cmd = 'UndotreeToggle', lazy = true },
+  { 'mbbill/undotree',  cmd = 'UndotreeToggle', lazy = true },
   {
     "nvim-telescope/telescope-frecency.nvim",
   },
-  { "windwp/nvim-spectre" },
+  { "windwp/nvim-spectre",            lazy = true },
   {
     "max397574/better-escape.nvim",
     config = function()
@@ -785,7 +779,15 @@ lvim.plugins = {
       "rcarriga/nvim-notify",
     }
   },
+  {
+    'bloznelis/before.nvim',
+    config = function()
+      local before = require('before')
+      before.setup()
+      vim.keymap.set('n', '<C-h>', before.jump_to_last_edit, {})
+      vim.keymap.set('n', '<C-l>', before.jump_to_next_edit, {})
+    end
+  },
 }
 lvim.builtin.cmp.formatting.source_names["copilot"] = "(Copilot)"
 table.insert(lvim.builtin.cmp.sources, 1, { name = "copilot" })
--- :let @p='<esc>0i"<Esc>i"j'
