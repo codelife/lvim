@@ -20,6 +20,7 @@ lvim.builtin.lualine.sections.lualine_c = {
 	components.python_env,
 	{ "filename", path = 2 },
 }
+
 lvim.transparent_window = true
 lvim.format_on_save = true
 vim.diagnostic.config({
@@ -36,6 +37,11 @@ lvim.builtin.bufferline.options.show_tab_indicators = false
 lvim.builtin.bufferline.options.tab_size = 0
 lvim.builtin.treesitter.matchup.enable = true
 lvim.lsp.buffer_options.formatexpr = "v:lua.vim.lsp.formatexpr(#{timeout_ms:2000})"
+
+lvim.builtin.alpha.active = true
+lvim.builtin.alpha.mode = "startify"
+lvim.builtin.terminal.active = true
+lvim.builtin.nvimtree.setup.view.side = "left"
 
 vim.opt.splitbelow = true
 vim.opt.foldmethod = "expr" -- fold with nvim_treesitter
@@ -118,33 +124,6 @@ require("lspconfig").gopls.setup({
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 
-lvim.autocommands = {
-	{
-		"FileType", -- see `:h autocmd-events`
-		{
-			group = "fugitive_setting",
-			pattern = { "fugitive" }, -- see `:h autocmd-events`
-			command = "map <buffer> gpp :Git push<CR>",
-		},
-	},
-}
-
-lvim.builtin.treesitter.textobjects.select = {
-	enable = true,
-	-- Automatically jump forward to textobj, similar to targets.vim
-	lookahead = true,
-	keymaps = {
-		-- You can use the capture groups defined in textobjects.scm
-		["af"] = "@conditional.outer",
-		["if"] = "@conditional.inner",
-		["ic"] = "@comment.outer",
-		["il"] = "@loop.inner",
-		["al"] = "@loop.outer",
-		["ak"] = "@block.outer",
-		["ik"] = "@block.inner",
-	},
-}
-
 lvim.builtin.gitsigns.opts.signs = {
 	change = { hl = "GitSignsChange", text = "│", numhl = "GitSignsChangeNr", linehl = "GitSignsChangeLn" },
 	add = { hl = "GitSignsAdd", text = "│", numhl = "GitSignsAddNr", linehl = "GitSignsAddLn" },
@@ -182,6 +161,10 @@ vim.api.nvim_set_keymap("n", "<c-p>", "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap("n", "<c-n>", "<cmd>BufferLineCycleNext<cr>", {})
 vim.api.nvim_set_keymap("n", ";w", "<cmd>w<cr>", {})
 vim.api.nvim_set_keymap("n", ";q", "<cmd>BufferKill<cr>", {})
+vim.api.nvim_set_keymap("n", ";s", "<cmd>Telescope grep_string<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", ";c", "<cmd>lua vim.lsp.buf.code_action()<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", ";f", "<cmd>lua vim.lsp.buf.format({async=true})<cr>", { noremap = true, silent = true })
+
 vim.api.nvim_set_keymap("v", "ts", ":TranslateW<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap(
@@ -234,11 +217,6 @@ lvim.builtin.which_key.mappings["9"] = { "<cmd>BufferLineGoToBuffer 9<CR>", "got
 lvim.builtin.which_key.mappings["n"] = { "<cmd>Telescope frecency<CR>", "recent files" }
 lvim.builtin.which_key.mappings["u"] = { "<cmd>UndotreeToggle<cr>", "Undo Tree" }
 lvim.builtin.which_key.mappings["q"] = { "<cmd>close<CR>", "quit" }
-lvim.builtin.which_key.mappings["S"] = { "<cmd>lua require('spectre').open()<CR>", "search" }
-lvim.builtin.which_key.mappings["sw"] =
-	{ "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", "search current word" }
-lvim.builtin.which_key.mappings["sg"] =
-	{ "<cmd>lua require('spectre').open_file_search()<CR>", "search in current file" }
 lvim.builtin.which_key.mappings["dg"] = { "<Cmd>DogeGenerate<CR>", "gen doc" }
 lvim.builtin.which_key.mappings["ba"] = { "<cmd>Telescope buffers<cr>", "List buffers" }
 lvim.builtin.which_key.mappings["bc"] = { "<cmd>BufferLinePickClose<cr>", "Buffer pick close" }
@@ -247,12 +225,10 @@ lvim.builtin.which_key.mappings["pj"] = { "<cmd>Telescope projects<cr>", "Projec
 -- lvim.builtin.which_key.mappings["sa"] = { "<cmd>SessionManager load_session<cr>", "Show all session" }
 -- lvim.builtin.which_key.mappings["sm"] =
 -- 	{ "<cmd>SessionManager load_current_dir_session<cr>", "Restore last session for CurrentDir" }
-lvim.builtin.which_key.mappings["fd"] = { "<cmd>RnvimrToggle<cr>", "ranger" }
+lvim.builtin.which_key.mappings["f"] = { "" }
 lvim.builtin.which_key.mappings["ff"] = { "<cmd>Telescope git_files<cr>", "Find file" }
-lvim.builtin.which_key.mappings["fh"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
+lvim.builtin.which_key.mappings["fl"] = { "<cmd>DiffviewFileHistory<cr>", "Show file commit history" }
 lvim.builtin.which_key.mappings["gf"] = { "<cmd>Telescope live_grep<cr>", "Live grep" }
-lvim.builtin.which_key.mappings["fw"] = { "<cmd>Telescope grep_string<cr>", "Searches word under cursor" }
--- lvim.builtin.which_key.mappings["fs"] = { "<cmd>Telescope yaml_schema<cr>", "select yaml_schema" }
 lvim.builtin.which_key.mappings["lc"] =
 	{ "<cmd>lua require'telescope.builtin'.command_history{}<cr>", "Command history" }
 lvim.builtin.which_key.mappings["la"] = { "<cmd>Telescope commands<cr>", "All commands" }
@@ -276,14 +252,8 @@ lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff curr
 lvim.builtin.which_key.mappings["ge"] = { "<c-w>h:q<cr>", "close left diff file" }
 lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
 lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
-lvim.builtin.which_key.mappings["gs"] = { "<cmd>Git<cr>", "git status" }
 lvim.builtin.which_key.mappings["gl"] = { "<cmd>Git blame<cr>", "git blame" }
-lvim.builtin.which_key.mappings["gw"] = { "<cmd>GWrite<cr>", "git write" }
 lvim.builtin.which_key.mappings["gr"] = { "<cmd>Gread<cr>", "git read" }
-lvim.builtin.which_key.mappings["gc"] = { "<cmd>Git commit<cr>", "git commit" }
-lvim.builtin.which_key.mappings["gp"] = { "<cmd>Git push<cr>", "git push" }
--- lvim.builtin.which_key.mappings["gg"] = { "<cmd>diffget //2<cr>", 'diffget left' }
--- lvim.builtin.which_key.mappings["gh"] = { "<cmd>diffget //3<cr>", 'diffget right' }
 
 -- Gitsigns map
 lvim.builtin.which_key.mappings["j"] = { "<cmd>Gitsigns next_hunk<CR>", "next hunk" }
@@ -299,17 +269,6 @@ lvim.builtin.which_key.mappings["hp"] = { "<cmd>Gitsigns preview_hunk<CR>", "pre
 lvim.builtin.which_key.mappings["hb"] = { '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', "blame line" }
 lvim.builtin.which_key.mappings["hd"] = { "<cmd>Gitsigns diffthis<CR>", "diff this" }
 lvim.builtin.which_key.mappings["hD"] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
-
-lvim.builtin.which_key.mappings["c"] = { "" }
-lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
-lvim.builtin.which_key.mappings["cd"] = { "<cmd>Telescope diagnostics bufnr=0 theme=get_ivy<cr>", "code diagnostic" }
-lvim.builtin.which_key.mappings["cf"] = { "<cmd>lua vim.lsp.buf.format({async=true})<cr>", "code format" }
-lvim.builtin.which_key.mappings["cl"] = { "<cmd>lua vim.lsp.codelens.run()<cr>" }
-
-lvim.builtin.alpha.active = true
-lvim.builtin.alpha.mode = "startify"
-lvim.builtin.terminal.active = true
-lvim.builtin.nvimtree.setup.view.side = "left"
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -440,16 +399,6 @@ lvim.plugins = {
 		end,
 	},
 	{
-		-- ranger
-		"kevinhwang91/rnvimr",
-		cmd = "RnvimrToggle",
-		config = function()
-			vim.g.rnvimr_draw_border = 1
-			vim.g.rnvimr_pick_enable = 1
-			vim.g.rnvimr_bw_enable = 1
-		end,
-	},
-	{
 		"tpope/vim-fugitive",
 	},
 	{ "sindrets/diffview.nvim" },
@@ -463,7 +412,7 @@ lvim.plugins = {
 	},
 	{
 		"norcalli/nvim-colorizer.lua",
-		event = "BufRead",
+		ft = { "css", "javascript", "typescript", "html", "scss", "sass", "lua", "typescriptreact", "vue" },
 		config = function()
 			require("colorizer").setup({
 				"css",
@@ -478,7 +427,6 @@ lvim.plugins = {
 			})
 		end,
 	},
-	{ "kkoomen/vim-doge", build = ":call doge#install()" },
 	{
 		"rmagatti/goto-preview",
 		lazy = true,
@@ -496,32 +444,6 @@ lvim.plugins = {
 		keys = { "g" },
 	},
 	{
-		"kevinhwang91/nvim-bqf",
-		event = { "BufRead", "BufNew" },
-		config = function()
-			require("bqf").setup({
-				auto_enable = true,
-				preview = {
-					win_height = 12,
-					win_vheight = 12,
-					delay_syntax = 80,
-					border_chars = { "┃", "┃", "━", "━", "┏", "┓", "┗", "┛", "█" },
-				},
-				func_map = {
-					vsplit = "",
-					ptogglemode = "z,",
-					stoggleup = "",
-				},
-				filter = {
-					fzf = {
-						action_for = { ["ctrl-s"] = "split" },
-						extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
-					},
-				},
-			})
-		end,
-	},
-	{
 		"monaqa/dial.nvim",
 		keys = { "<C-a>", { "<C-x>", mode = "n" } },
 		config = function()
@@ -535,7 +457,7 @@ lvim.plugins = {
 			require("dial.config").augends:register_group({
 				-- default augends used when no group name is specified
 				default = {
-					augend.integer.alias.decimal, -- nonnegative decimal number (0, 1, 2, 3, ...)
+					augend.integer.alias.decimal, -- nonnegative decimal number (1, 1, 2, 3, ...)
 					augend.integer.alias.hex, -- nonnegative hex number  (0x01, 0x1a1f, etc.)
 					augend.constant.alias.bool, -- boolean value (true <-> false)
 					augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
@@ -551,6 +473,11 @@ lvim.plugins = {
 					}),
 					augend.constant.new({
 						elements = { "asc", "desc" },
+						word = true,
+						cyclic = true,
+					}),
+					augend.constant.new({
+						elements = { "and", "or" },
 						word = true,
 						cyclic = true,
 					}),
@@ -580,7 +507,6 @@ lvim.plugins = {
 					-- "goimports",
 					-- "golangci_lint_ls",
 					-- "isort",
-					-- "vimls",
 				},
 				automatic_installation = { exclude = { "ruff", "tsserver" } },
 			})
@@ -656,24 +582,10 @@ lvim.plugins = {
 		"nvim-telescope/telescope-frecency.nvim",
 		lazy = true,
 	},
-	{ "windwp/nvim-spectre", lazy = true },
-	{
-		"max397574/better-escape.nvim",
-		lazy = true,
-		config = function()
-			require("better_escape").setup({
-				timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
-			})
-		end,
-	},
 	-- colorscheme
-	{ "Shatur/neovim-ayu" },
 	{ "hzchirs/vim-material" },
 	{ "patstockwell/vim-monokai-tasty" },
-	{ "rebelot/kanagawa.nvim" },
 	{ "Mofiqul/dracula.nvim" },
-	{ "ellisonleao/gruvbox.nvim" },
-	{ "sickill/vim-monokai" },
 	{
 		"scottmckendry/cyberdream.nvim",
 		lazy = false,
@@ -713,14 +625,6 @@ lvim.plugins = {
 					highlighter = wilder.basic_highlighter(),
 				})
 			)
-		end,
-	},
-	{
-		"sustech-data/wildfire.nvim",
-		event = "VeryLazy",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
-		config = function()
-			require("wildfire").setup()
 		end,
 	},
 	{
