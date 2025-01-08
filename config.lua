@@ -12,7 +12,7 @@ an executable
 Path = require("plenary.path")
 lvim.log.level = "warn"
 lvim.colorscheme = "dracula"
-lvim.builtin.lualine.options.theme = "palenight"
+lvim.builtin.lualine.options.theme = "dracula"
 lvim.builtin.lualine.style = "lvim"
 local components = require("lvim.core.lualine.components")
 lvim.builtin.lualine.sections.lualine_c = {
@@ -36,9 +36,11 @@ lvim.builtin.bufferline.options.diagnostics = true
 lvim.builtin.bufferline.options.show_tab_indicators = false
 lvim.builtin.bufferline.options.tab_size = 0
 lvim.builtin.treesitter.matchup.enable = true
+lvim.builtin.luasnip.active = false
+lvim.builtin.luasnip.sources.friendly_snippets = false
 lvim.lsp.buffer_options.formatexpr = "v:lua.vim.lsp.formatexpr(#{timeout_ms:2000})"
 
-lvim.builtin.alpha.active = true
+lvim.builtin.alpha.active = false
 lvim.builtin.alpha.mode = "startify"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
@@ -100,8 +102,8 @@ require("lspconfig").ruff_lsp.setup({
 		vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
 		vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
 		vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-		-- vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
 		vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+		-- vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
 	end,
 	init_options = {
 		settings = {
@@ -143,19 +145,19 @@ vim.api.nvim_set_keymap(
 	"n",
 	"gp",
 	"<cmd>lua require('goto-preview').goto_preview_definition()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "goto preview definition" }
 )
 vim.api.nvim_set_keymap(
 	"n",
 	"gq",
 	"<cmd>lua require('goto-preview').close_all_win()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "close preview window" }
 )
 vim.api.nvim_set_keymap(
 	"n",
 	"gi",
 	"<cmd>lua require('goto-preview').goto_preview_implementation()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "goto preview implementation" }
 )
 vim.api.nvim_set_keymap("n", "<c-p>", "<cmd>BufferLineCyclePrev<cr>", {})
 vim.api.nvim_set_keymap("n", "<c-n>", "<cmd>BufferLineCycleNext<cr>", {})
@@ -269,6 +271,9 @@ lvim.builtin.which_key.mappings["hp"] = { "<cmd>Gitsigns preview_hunk<CR>", "pre
 lvim.builtin.which_key.mappings["hb"] = { '<cmd>lua require"gitsigns".blame_line{full=true}<CR>', "blame line" }
 lvim.builtin.which_key.mappings["hd"] = { "<cmd>Gitsigns diffthis<CR>", "diff this" }
 lvim.builtin.which_key.mappings["hD"] = { '<cmd>lua require"gitsigns".diffthis("~")<CR>', "diff HEAD" }
+
+lvim.builtin.which_key.mappings["c"] = { "" }
+lvim.builtin.which_key.mappings["ca"] = { "<cmd>lua vim.lsp.buf.code_action()<cr>", "code action" }
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -384,6 +389,7 @@ lvim.plugins = {
 	},
 	{
 		"nacro90/numb.nvim",
+		lazy = true,
 		config = function()
 			require("numb").setup()
 		end,
@@ -400,8 +406,10 @@ lvim.plugins = {
 	},
 	{
 		"tpope/vim-fugitive",
+		lazy = true,
+		priority = 1000,
 	},
-	{ "sindrets/diffview.nvim" },
+	{ "sindrets/diffview.nvim", lazy = true, priority = 1000 },
 	{
 		"windwp/nvim-ts-autotag",
 		ft = { "html", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte", "vue" },
@@ -529,12 +537,29 @@ lvim.plugins = {
 	{
 		"kevinhwang91/nvim-hlslens",
 		config = function()
-			require("hlslens").setup()
+			require("hlslens").setup({
+				calm_down = true,
+			})
+			local kopts = { noremap = true, silent = true }
+			vim.api.nvim_set_keymap(
+				"n",
+				"n",
+				[[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+				kopts
+			)
+			vim.api.nvim_set_keymap(
+				"n",
+				"N",
+				[[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+				kopts
+			)
+			vim.api.nvim_set_keymap("n", "*", [[*<Cmd>lua require('hlslens').start()<CR>]], kopts)
+			vim.api.nvim_set_keymap("n", "#", [[#<Cmd>lua require('hlslens').start()<CR>]], kopts)
 		end,
 	},
 	{
 		"folke/todo-comments.nvim",
-		event = "BufRead",
+		cmd = "TodoTelescope",
 		config = function()
 			require("user.todo-comment")
 		end,
@@ -570,9 +595,9 @@ lvim.plugins = {
 		"nvim-telescope/telescope-ui-select.nvim",
 		config = function()
 			require("telescope").load_extension("ui-select")
-			require("telescope").load_extension("neoclip")
-			require("telescope").load_extension("frecency")
-			require("telescope").load_extension("macroscope")
+			-- require("telescope").load_extension("neoclip")
+			-- require("telescope").load_extension("frecency")
+			-- require("telescope").load_extension("macroscope")
 			-- require("telescope").load_extension("yaml_schema")
 			-- require("telescope").load_extension("dap")
 		end,
@@ -588,6 +613,11 @@ lvim.plugins = {
 	{ "Mofiqul/dracula.nvim" },
 	{
 		"scottmckendry/cyberdream.nvim",
+		lazy = false,
+		priority = 1000,
+	},
+	{
+		"dgox16/oldworld.nvim",
 		lazy = false,
 		priority = 1000,
 	},
@@ -738,7 +768,6 @@ lvim.plugins = {
 		dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
 		opts = {},
 	},
-	{ "echasnovski/mini.nvim", version = false },
 	{
 		"andymass/vim-matchup",
 		init = function()
