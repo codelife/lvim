@@ -250,7 +250,7 @@ lvim.builtin.which_key.mappings["mp"] = { "<cmd>MarkdownPreview<cr>", "Markdown 
 lvim.builtin.which_key.mappings["mg"] = { "<cmd>GenTocMarked<cr>", "Markdown GenTocMarked " }
 lvim.builtin.which_key.mappings["mf"] = { "<cmd>PanguAll<cr>", "Markdown Text format" }
 
-lvim.builtin.which_key.mappings["gd"] = { "<cmd>Gdiffsplit!<cr>", "git diff current file" }
+lvim.builtin.which_key.mappings["gd"] = { "<cmd>Git diffthis<cr>", "git diff current file" }
 lvim.builtin.which_key.mappings["ge"] = { "<c-w>h:q<cr>", "close left diff file" }
 lvim.builtin.which_key.mappings["gv"] = { "<cmd>DiffviewOpen<cr>", "git diff view" }
 lvim.builtin.which_key.mappings["gq"] = { "<cmd>DiffviewClose<cr>", "git diffview close" }
@@ -409,7 +409,7 @@ lvim.plugins = {
 		lazy = true,
 		priority = 1000,
 	},
-	{ "sindrets/diffview.nvim", lazy = true, priority = 1000 },
+	{ "sindrets/diffview.nvim" },
 	{
 		"windwp/nvim-ts-autotag",
 		ft = { "html", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte", "vue" },
@@ -613,11 +613,6 @@ lvim.plugins = {
 	{ "Mofiqul/dracula.nvim" },
 	{
 		"scottmckendry/cyberdream.nvim",
-		lazy = false,
-		priority = 1000,
-	},
-	{
-		"dgox16/oldworld.nvim",
 		lazy = false,
 		priority = 1000,
 	},
